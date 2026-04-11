@@ -195,4 +195,34 @@ Add `sudo` before the command.
 
 ---
 
+## ⚠️ Important: Cognee Docker Auto-Start
+
+Cognee runs in Docker. Docker Desktop must be running for Cognee to work.
+
+**To start Cognee after a reboot:**
+```bash
+cd ~/.openclaw/cognee && docker compose up -d
+```
+
+**To make it start automatically with Docker Desktop:**
+In Docker Desktop → Settings → General → enable "Start Docker Desktop when you log in"
+The `restart: unless-stopped` in docker-compose.yml means Cognee auto-starts when Docker starts.
+
+**Verify it's running:**
+```bash
+curl http://localhost:8000/
+```
+Should return: `{"message":"Hello, World, I am alive!"}`
+
+**OpenClaw memory slot config (set once, survives reboots):**
+```bash
+openclaw config set plugins.slots.memory "cognee-openclaw"
+```
+
+**The .env file with OpenAI key lives at:**
+`~/.openclaw/cognee/.env`
+Never commit this file. It's in .gitignore.
+
+---
+
 *Created: 2026-04-10 | By: Finn 🦊*
