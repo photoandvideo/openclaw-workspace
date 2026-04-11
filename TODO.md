@@ -7,6 +7,13 @@
 
 ## 🔴 In Progress
 
+### Switch primary model to Claude Haiku
+- Change default from claude-sonnet-4-6 to claude-haiku
+- Keep Sonnet available for complex/research tasks
+- **Do tomorrow**
+
+---
+
 ### Docker Desktop Install
 - Hugo is downloading Docker Desktop for Windows
 - **Next:** Run installer → enable WSL2 integration → confirm `docker --version` in WSL
@@ -73,6 +80,29 @@
 ## ⏸️ Postponed
 
 *(nothing postponed yet)*
+
+---
+
+## 🟡 Pending (not started)
+
+### Market Research — Parking Lot Services
+- **Services:** Striping, resurfacing/recovering, patching
+- **Research needed:**
+  - Local demand (New York/New Jersey area)
+  - Competitor landscape (who's doing it, how many, reviews)
+  - Pricing benchmarks for each service type
+  - Startup costs, equipment needed
+  - Licensing/insurance requirements
+- **Tools:** Brave Search + web scraping
+- **Deliverable:** Full research report with actionable insights
+- **Priority:** High — potential income replacement
+
+### Lead Generation — Pinellas County FL
+- Search for demand signals: Craigslist, Facebook Groups, Nextdoor, HomeAdvisor, Thumbtack, Angi
+- Find people/businesses actively asking for parking lot striping, patching, resurfacing
+- Pull contact info / leads where possible
+- Goal: test market appetite before committing to startup
+- **Do alongside market research**
 
 ---
 
