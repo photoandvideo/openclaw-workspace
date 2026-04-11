@@ -1,0 +1,20 @@
+# Node modules (large, reinstallable)
+skills/playwright-scraper-skill/node_modules/
+
+# Playwright browser cache
+.cache/
+
+# Temp files
+*.tmp
+*.bak
+
+# Secrets (never commit)
+*.env
+secrets.env
+credentials.json
+token.pickle
+*.key
+
+# OS
+.DS_Store
+Thumbs.db
