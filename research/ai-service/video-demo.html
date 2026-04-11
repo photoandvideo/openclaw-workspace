@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexcom AI — Video Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #000; color: #fff; overflow: hidden; }
+
+    .screen { width: 1280px; height: 720px; position: relative; overflow: hidden; background: #0f172a; }
+
+    /* SLIDES */
+    .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; opacity: 0; transition: opacity 0.8s ease; pointer-events: none; }
+    .slide.active { opacity: 1; pointer-events: all; }
+
+    /* BACKGROUNDS */
+    .bg-dark { background: #0f172a; }
+    .bg-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    .bg-red { background: linear-gradient(135deg, #1a0000 0%, #2d0000 100%); }
+    .bg-green { background: linear-gradient(135deg, #001a00 0%, #002d00 100%); }
+    .bg-blue { background: linear-gradient(135deg, #001a2d 0%, #002d4a 100%); }
+
+    /* LOGO BAR */
+    .logo-bar { position: absolute; top: 24px; left: 40px; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 10px; height: 10px; background: #38bdf8; border-radius: 50%; }
+    .logo-text { font-size: 14px; font-weight: 700; color: #38bdf8; letter-spacing: 1px; }
+
+    /* PROGRESS BAR */
+    .progress { position: absolute; bottom: 0; left: 0; height: 3px; background: #38bdf8; transition: width 0.1s linear; }
+
+    /* SLIDE COUNTER */
+    .counter { position: absolute; top: 24px; right: 40px; font-size: 12px; color: #475569; }
+
+    /* TYPOGRAPHY */
+    .eyebrow { font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #38bdf8; margin-bottom: 16px; }
+    .headline { font-size: 64px; font-weight: 900; line-height: 1.05; text-align: center; margin-bottom: 20px; }
+    .headline .accent { color: #38bdf8; }
+    .headline .red { color: #ef4444; }
+    .headline .green { color: #22c55e; }
+    .subline { font-size: 22px; color: #94a3b8; text-align: center; max-width: 700px; line-height: 1.5; }
+    .body-text { font-size: 20px; color: #cbd5e1; line-height: 1.7; max-width: 800px; text-align: center; }
+
+    /* BIG STAT */
+    .stat-wrap { display: flex; flex-direction: column; align-items: center; }
+    .stat-number { font-size: 160px; font-weight: 900; line-height: 1; }
+    .stat-label { font-size: 28px; color: #94a3b8; margin-top: 8px; text-align: center; }
+
+    /* RESULTS LIST */
+    .results { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 700px; }
+    .result-item { display: flex; align-items: center; gap: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 16px 20px; font-size: 18px; opacity: 0; transform: translateX(-20px); transition: all 0.4s ease; }
+    .result-item.show { opacity: 1; transform: translateX(0); }
+    .result-icon { font-size: 24px; flex-shrink: 0; }
+    .result-text { flex: 1; color: #cbd5e1; }
+    .result-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+    .badge-bad { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge-ok { background: rgba(245,158,11,0.15); color: #f59e0b; }
+    .badge-good { background: rgba(34,197,94,0.15); color: #22c55e; }
+
+    /* PHONE MOCKUP */
+    .phone-wrap { display: flex; gap: 60px; align-items: center; width: 100%; max-width: 900px; }
+    .phone { width: 280px; height: 480px; background: #1e293b; border-radius: 36px; border: 3px solid #334155; overflow: hidden; flex-shrink: 0; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+    .phone-header { background: #075e54; padding: 14px 18px; display: flex; align-items: center; gap: 10px; }
+    .phone-avatar { width: 36px; height: 36px; border-radius: 50%; background: #25d366; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .phone-name { font-size: 13px; font-weight: 700; }
+    .phone-status { font-size: 11px; color: rgba(255,255,255,0.7); }
+    .phone-messages { padding: 12px; background: #e5ddd5; flex: 1; height: 340px; overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
+    .phone-msg { max-width: 200px; padding: 8px 12px; font-size: 12px; line-height: 1.4; border-radius: 8px; }
+    .phone-msg.user { background: #dcf8c6; color: #111; align-self: flex-end; border-radius: 8px 0 8px 8px; }
+    .phone-msg.bot { background: #fff; color: #111; align-self: flex-start; border-radius: 0 8px 8px 8px; }
+    .phone-msg.typing { background: #fff; align-self: flex-start; border-radius: 0 8px 8px 8px; display: flex; gap: 4px; padding: 10px 14px; }
+    .t-dot { width: 6px; height: 6px; background: #aaa; border-radius: 50%; animation: tdot 1.2s infinite; }
+    .t-dot:nth-child(2) { animation-delay: 0.2s; }
+    .t-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes tdot { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+
+    .phone-info { flex: 1; }
+    .phone-info h3 { font-size: 28px; font-weight: 800; margin-bottom: 16px; }
+    .phone-info ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .phone-info li { display: flex; gap: 12px; font-size: 16px; color: #cbd5e1; }
+    .phone-info li span:first-child { color: #38bdf8; }
+
+    /* CTA SLIDE */
+    .cta-box { background: rgba(56,189,248,0.08); border: 1.5px solid rgba(56,189,248,0.3); border-radius: 24px; padding: 50px 60px; text-align: center; }
+    .cta-url { font-size: 42px; font-weight: 900; color: #38bdf8; margin: 20px 0; }
+    .cta-sub { font-size: 18px; color: #64748b; }
+
+    /* CONTROLS */
+    .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 12px; z-index: 100; }
+    .ctrl-btn { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 20px; border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; backdrop-filter: blur(10px); }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.2); }
+    .ctrl-btn.primary { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+    .fade-up { animation: fadeUp 0.8s ease forwards; }
+    .fade-up-2 { animation: fadeUp 0.8s 0.3s ease both; }
+    .fade-up-3 { animation: fadeUp 0.8s 0.6s ease both; }
+    .pulse { animation: pulse 2s infinite; }
+
+    /* SPLIT LAYOUT */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; width: 100%; max-width: 1000px; align-items: center; }
+    .split-text h2 { font-size: 40px; font-weight: 900; line-height: 1.2; margin-bottom: 20px; }
+    .split-text p { font-size: 18px; color: #94a3b8; line-height: 1.6; }
+    .big-check { font-size: 80px; text-align: center; margin-bottom: 16px; }
+
+    /* WRAP FOR SCALING */
+    .wrapper { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; background: #000; }
+    .scaler { transform-origin: center center; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="scaler">
+  <div class="screen" id="screen">
+
+    <!-- LOGO BAR (global) -->
+    <div class="logo-bar"><div class="logo-dot"></div><div class="logo-text">NEXCOM AI</div></div>
+    <div class="counter" id="counter">1 / 10</div>
+    <div class="progress" id="progress"></div>
+
+    <!-- SLIDE 1: TITLE -->
+    <div class="slide bg-gradient active" id="slide-0">
+      <div class="eyebrow fade-up">Nexcom AI · Tampa Bay, FL</div>
+      <h1 class="headline fade-up-2">I Texted <span class="accent">10 Local</span><br/>Businesses at 9PM</h1>
+      <p class="subline fade-up-3">Only 2 responded.<br/>Here's what that means for your business.</p>
+    </div>
+
+    <!-- SLIDE 2: THE PROBLEM -->
+    <div class="slide bg-dark" id="slide-1">
+      <div class="eyebrow fade-up">The Problem</div>
+      <h2 class="headline fade-up-2" style="font-size:48px">You're on the job.<br/><span class="accent">Your phone is ringing.</span></h2>
+      <p class="body-text fade-up-3" style="margin-top:24px">Customers don't wait. They text 3 businesses at once. Whoever responds first gets the job.<br/><br/>Every missed message is a job that went to your competitor.</p>
+    </div>
+
+    <!-- SLIDE 3: THE EXPERIMENT -->
+    <div class="slide bg-dark" id="slide-2">
+      <div class="eyebrow">The Experiment</div>
+      <p style="font-size:20px; color:#94a3b8; margin-bottom:30px; text-align:center">I sent this message to 10 local Tampa businesses at 9:07 PM:</p>
+      <div style="background:rgba(56,189,248,0.08); border:1px solid rgba(56,189,248,0.2); border-radius:16px; padding:24px 32px; max-width:600px; text-align:center;">
+        <p style="font-size:20px; color:#e2e8f0; font-style:italic; line-height:1.6">"Hi, I have a leak under my kitchen sink that's getting worse. Do you have availability tomorrow? What would this cost?"</p>
+      </div>
+      <p style="font-size:16px; color:#64748b; margin-top:24px;">A real customer message. Real money walking in the door.</p>
+    </div>
+
+    <!-- SLIDE 4: RESULTS -->
+    <div class="slide bg-dark" id="slide-3">
+      <div class="eyebrow">The Results</div>
+      <div class="results" id="results-list">
+        <div class="result-item"><span class="result-icon">📱</span><span class="result-text">Business 1 — No response. Nothing 48hrs later.</span><span class="result-badge badge-bad">LOST</span></div>
+        <div class="result-item"><span class="result-icon">⏰</span><span class="result-text">Business 2 — Responded 11 hours later. Too late.</span><span class="result-badge badge-bad">LOST</span></div>
+        <div class="result-item"><span class="result-icon">📞</span><span class="result-text">Business 3 — Voicemail only. No text option.</span><span class="result-badge badge-bad">LOST</span></div>
+        <div class="result-item"><span class="result-icon">🤖</span><span class="result-text">Business 7 — Responded in 4 minutes. Got my job.</span><span class="result-badge badge-good">WON ✓</span></div>
+        <div class="result-item"><span class="result-icon">❌</span><span class="result-text">Businesses 4, 5, 6, 8, 9, 10 — No response at all.</span><span class="result-badge badge-bad">ALL LOST</span></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5: BIG STAT -->
+    <div class="slide bg-red" id="slide-4">
+      <div class="stat-wrap pulse">
+        <div class="stat-number" style="color:#ef4444">80%</div>
+        <div class="stat-label">of businesses didn't respond effectively</div>
+      </div>
+      <p style="margin-top:40px; font-size:22px; color:#94a3b8; text-align:center">If one missed message = $400 job lost...<br/>that's <span style="color:#ef4444; font-weight:800">$400 gone every single night.</span></p>
+    </div>
+
+    <!-- SLIDE 6: THE SOLUTION -->
+    <div class="slide bg-blue" id="slide-5">
+      <div class="eyebrow">The Solution</div>
+      <h2 class="headline fade-up" style="font-size:52px">Meet Your <span class="accent">24/7</span><br/>AI Assistant</h2>
+      <p class="subline fade-up-2">Responds instantly to every text, DM, and missed call.<br/>Books appointments. Captures leads. Works while you sleep.</p>
+    </div>
+
+    <!-- SLIDE 7: PHONE DEMO -->
+    <div class="slide bg-dark" id="slide-6">
+      <div class="eyebrow">See It In Action</div>
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-header">
+            <div class="phone-avatar">🔧</div>
+            <div><div class="phone-name">Suncoast Plumbing</div><div class="phone-status">● Online 24/7</div></div>
+          </div>
+          <div class="phone-messages" id="phone-msgs">
+            <div class="phone-msg user">Hi, I have a leak under my sink. How much would that cost?</div>
+          </div>
+        </div>
+        <div class="phone-info">
+          <h3>Instant. Automatic. <span style="color:#38bdf8">Always on.</span></h3>
+          <ul>
+            <li><span>✓</span><span>Responds in under 10 seconds</span></li>
+            <li><span>✓</span><span>Gives accurate pricing</span></li>
+            <li><span>✓</span><span>Books the appointment</span></li>
+            <li><span>✓</span><span>Captures lead info</span></li>
+            <li><span>✓</span><span>Works 24/7/365</span></li>
+            <li><span>✓</span><span>Available in English & Spanish 🇪🇸</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8: HOW IT WORKS -->
+    <div class="slide bg-gradient" id="slide-7">
+      <div class="eyebrow">How It Works</div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:900px;">
+        <div style="text-align:center; padding:30px 20px; background:rgba(255,255,255,0.04); border-radius:20px; border:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:48px; margin-bottom:16px;">📞</div>
+          <div style="font-weight:800; font-size:18px; margin-bottom:8px;">1. We set it up</div>
+          <div style="font-size:14px; color:#64748b;">30-min call. We learn your business. Done in 48 hours.</div>
+        </div>
+        <div style="text-align:center; padding:30px 20px; background:rgba(56,189,248,0.06); border-radius:20px; border:1px solid rgba(56,189,248,0.2);">
+          <div style="font-size:48px; margin-bottom:16px;">🤖</div>
+          <div style="font-weight:800; font-size:18px; margin-bottom:8px;">2. AI handles it</div>
+          <div style="font-size:14px; color:#64748b;">Every message answered. Every lead captured. 24/7.</div>
+        </div>
+        <div style="text-align:center; padding:30px 20px; background:rgba(255,255,255,0.04); border-radius:20px; border:1px solid rgba(255,255,255,0.08);">
+          <div style="font-size:48px; margin-bottom:16px;">💰</div>
+          <div style="font-weight:800; font-size:18px; margin-bottom:8px;">3. You get more jobs</div>
+          <div style="font-size:14px; color:#64748b;">Wake up to captured leads. Call them. Close them.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9: PRICING -->
+    <div class="slide bg-dark" id="slide-8">
+      <div class="eyebrow">Simple Pricing</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:700px;">
+        <div style="padding:32px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:20px; text-align:center;">
+          <div style="font-size:13px; color:#38bdf8; font-weight:700; letter-spacing:2px; margin-bottom:12px;">STARTER</div>
+          <div style="font-size:48px; font-weight:900;">$500</div>
+          <div style="color:#64748b; margin-bottom:16px;">setup + $300/mo</div>
+          <div style="font-size:14px; color:#94a3b8; line-height:1.8;">✓ Custom AI assistant<br/>✓ SMS + website chat<br/>✓ Lead capture<br/>✓ Cancel anytime</div>
+        </div>
+        <div style="padding:32px; background:rgba(56,189,248,0.06); border:1.5px solid rgba(56,189,248,0.3); border-radius:20px; text-align:center; position:relative;">
+          <div style="position:absolute; top:-14px; left:50%; transform:translateX(-50%); background:#38bdf8; color:#0f172a; font-size:11px; font-weight:800; padding:4px 14px; border-radius:999px;">MOST POPULAR</div>
+          <div style="font-size:13px; color:#38bdf8; font-weight:700; letter-spacing:2px; margin-bottom:12px;">GROWTH</div>
+          <div style="font-size:48px; font-weight:900;">$1,000</div>
+          <div style="color:#64748b; margin-bottom:16px;">setup + $500/mo</div>
+          <div style="font-size:14px; color:#94a3b8; line-height:1.8;">✓ Everything in Starter<br/>✓ All channels<br/>✓ Follow-up sequences<br/>✓ Weekly reports</div>
+        </div>
+      </div>
+      <p style="margin-top:24px; font-size:16px; color:#475569;">Most clients make it back in the first week from one job they would've missed.</p>
+    </div>
+
+    <!-- SLIDE 10: CTA -->
+    <div class="slide bg-gradient" id="slide-9">
+      <div class="cta-box">
+        <div style="font-size:48px; margin-bottom:16px;">🚀</div>
+        <h2 style="font-size:44px; font-weight:900; margin-bottom:12px;">Try the live demo<br/>right now — it's free.</h2>
+        <div class="cta-url pulse">nexcomai.ai</div>
+        <div class="cta-sub">Chat with the AI. See exactly what your customers experience.<br/>Setup in 48 hours. We do all the work.</div>
+        <div style="margin-top:28px; display:flex; gap:16px; justify-content:center; font-size:15px; color:#475569;">
+          <span>📍 Tampa Bay, FL</span>
+          <span>·</span>
+          <span>✉️ hello@nexcomai.ai</span>
+          <span>·</span>
+          <span>🇪🇸 También en español</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end screen -->
+  </div><!-- end scaler -->
+</div><!-- end wrapper -->
+
+<!-- CONTROLS -->
+<div class="controls">
+  <button class="ctrl-btn" onclick="prevSlide()">← Prev</button>
+  <button class="ctrl-btn" id="play-btn" onclick="togglePlay()">⏸ Pause</button>
+  <button class="ctrl-btn" onclick="nextSlide()">Next →</button>
+  <button class="ctrl-btn primary" onclick="window.open('demo.html')">Try Demo</button>
+</div>
+
+<script>
+const SLIDES = 10;
+const DURATIONS = [4000, 5000, 5000, 6000, 5000, 4000, 7000, 5000, 6000, 8000]; // ms per slide
+let current = 0;
+let playing = true;
+let timer = null;
+let progressTimer = null;
+let progressStart = null;
+
+function showSlide(n) {
+  document.querySelectorAll('.slide').forEach((s,i) => s.classList.toggle('active', i === n));
+  document.getElementById('counter').textContent = `${n+1} / ${SLIDES}`;
+  document.getElementById('progress').style.width = '0%';
+
+  if (n === 3) animateResults();
+  if (n === 6) animatePhone();
+
+  startProgress(DURATIONS[n]);
+}
+
+function startProgress(duration) {
+  clearInterval(progressTimer);
+  progressStart = Date.now();
+  progressTimer = setInterval(() => {
+    const elapsed = Date.now() - progressStart;
+    const pct = Math.min((elapsed / duration) * 100, 100);
+    document.getElementById('progress').style.width = pct + '%';
+  }, 50);
+}
+
+function nextSlide() {
+  clearTimeout(timer);
+  current = (current + 1) % SLIDES;
+  showSlide(current);
+  if (playing) scheduleNext();
+}
+
+function prevSlide() {
+  clearTimeout(timer);
+  current = (current - 1 + SLIDES) % SLIDES;
+  showSlide(current);
+  if (playing) scheduleNext();
+}
+
+function scheduleNext() {
+  clearTimeout(timer);
+  timer = setTimeout(nextSlide, DURATIONS[current]);
+}
+
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('play-btn').textContent = playing ? '⏸ Pause' : '▶ Play';
+  if (playing) scheduleNext();
+  else clearTimeout(timer);
+}
+
+// Animate results list
+function animateResults() {
+  const items = document.querySelectorAll('.result-item');
+  items.forEach((item, i) => {
+    item.classList.remove('show');
+    setTimeout(() => item.classList.add('show'), i * 350);
+  });
+}
+
+// Animate phone chat
+let phoneAnimated = false;
+function animatePhone() {
+  if (phoneAnimated) return;
+  phoneAnimated = true;
+  const msgs = document.getElementById('phone-msgs');
+
+  // Typing indicator
+  setTimeout(() => {
+    const typing = document.createElement('div');
+    typing.className = 'phone-msg typing';
+    typing.id = 'typing-ind';
+    typing.innerHTML = '<div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>';
+    msgs.appendChild(typing);
+  }, 800);
+
+  // First response
+  setTimeout(() => {
+    const t = document.getElementById('typing-ind');
+    if(t) t.remove();
+    const m = document.createElement('div');
+    m.className = 'phone-msg bot';
+    m.textContent = 'Hi! 👋 Leak repair typically runs $150–$400 depending on location. We can come out tomorrow morning — what time works?';
+    msgs.appendChild(m);
+  }, 2200);
+
+  // User reply
+  setTimeout(() => {
+    const m = document.createElement('div');
+    m.className = 'phone-msg user';
+    m.textContent = '9am works great!';
+    msgs.appendChild(m);
+  }, 4000);
+
+  // Typing again
+  setTimeout(() => {
+    const typing = document.createElement('div');
+    typing.className = 'phone-msg typing';
+    typing.id = 'typing-ind2';
+    typing.innerHTML = '<div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>';
+    msgs.appendChild(typing);
+  }, 4800);
+
+  // Confirmation
+  setTimeout(() => {
+    const t = document.getElementById('typing-ind2');
+    if(t) t.remove();
+    const m = document.createElement('div');
+    m.className = 'phone-msg bot';
+    m.textContent = '✅ Booked! Carlos will see you tomorrow at 9AM. What\'s your address?';
+    msgs.appendChild(m);
+  }, 6200);
+}
+
+// Scale to fit window
+function scaleScreen() {
+  const scaler = document.querySelector('.scaler');
+  const ww = window.innerWidth, wh = window.innerHeight;
+  const scale = Math.min(ww / 1280, wh / 780);
+  scaler.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', scaleScreen);
+scaleScreen();
+
+// Keyboard nav
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') nextSlide();
+  if (e.key === 'ArrowLeft') prevSlide();
+  if (e.key === 'p') togglePlay();
+});
+
+// Start
+showSlide(0);
+scheduleNext();
+</script>
+</body>
+</html>

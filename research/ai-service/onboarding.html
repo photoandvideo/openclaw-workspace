@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexcom AI — From Yes to Live in 48 Hours</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #fff; padding: 40px 20px; }
+    .page { max-width: 960px; margin: 0 auto; }
+
+    /* HEADER */
+    .header { text-align: center; margin-bottom: 60px; }
+    .logo { font-size: 13px; font-weight: 700; color: #38bdf8; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; }
+    .title { font-size: 40px; font-weight: 900; line-height: 1.15; margin-bottom: 14px; }
+    .title span { color: #38bdf8; }
+    .subtitle { color: #94a3b8; font-size: 16px; max-width: 580px; margin: 0 auto 24px; line-height: 1.6; }
+    .promise-bar { display: inline-flex; gap: 24px; background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); border-radius: 999px; padding: 10px 28px; flex-wrap: wrap; justify-content: center; }
+    .promise-item { font-size: 13px; color: #7dd3fc; font-weight: 600; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 40px; }
+    .timeline::before { content: ''; position: absolute; left: 16px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, #38bdf8, #6366f1, #22c55e, #f59e0b, #ec4899); }
+
+    .step { position: relative; margin-bottom: 40px; }
+    .step-dot { position: absolute; left: -32px; top: 20px; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; border: 2px solid; flex-shrink: 0; }
+    .dot-blue { background: rgba(56,189,248,0.15); border-color: #38bdf8; color: #38bdf8; }
+    .dot-indigo { background: rgba(99,102,241,0.15); border-color: #6366f1; color: #6366f1; }
+    .dot-green { background: rgba(34,197,94,0.15); border-color: #22c55e; color: #22c55e; }
+    .dot-yellow { background: rgba(245,158,11,0.15); border-color: #f59e0b; color: #f59e0b; }
+    .dot-pink { background: rgba(236,72,153,0.15); border-color: #ec4899; color: #ec4899; }
+    .dot-teal { background: rgba(20,184,166,0.15); border-color: #14b8a6; color: #14b8a6; }
+
+    .step-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 18px; padding: 24px 28px; transition: border-color 0.2s; }
+    .step-card:hover { border-color: rgba(56,189,248,0.2); }
+
+    .step-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; gap: 16px; flex-wrap: wrap; }
+    .step-left { flex: 1; }
+    .step-time { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+    .time-blue { color: #38bdf8; }
+    .time-indigo { color: #818cf8; }
+    .time-green { color: #22c55e; }
+    .time-yellow { color: #f59e0b; }
+    .time-pink { color: #ec4899; }
+    .time-teal { color: #14b8a6; }
+
+    .step-title { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .step-desc { font-size: 14px; color: #94a3b8; line-height: 1.6; }
+
+    .step-badge { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px 14px; text-align: center; flex-shrink: 0; }
+    .badge-icon { font-size: 24px; }
+    .badge-label { font-size: 11px; color: #64748b; margin-top: 2px; }
+
+    /* INFO GRID */
+    .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+    .info-item { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 12px 14px; display: flex; align-items: flex-start; gap: 10px; }
+    .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+    .info-text { flex: 1; }
+    .info-label { font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+    .info-desc { font-size: 11px; color: #64748b; line-height: 1.4; }
+
+    /* CHECKLIST */
+    .checklist { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .check-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #cbd5e1; }
+    .check-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+
+    /* OUTCOME BOX */
+    .outcome { background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.2); border-radius: 12px; padding: 14px 18px; margin-top: 16px; display: flex; align-items: center; gap: 12px; }
+    .outcome-icon { font-size: 22px; flex-shrink: 0; }
+    .outcome-text { font-size: 13px; color: #86efac; line-height: 1.5; }
+
+    /* WHAT WE NEED */
+    .needs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 16px; }
+    .need-card { background: rgba(99,102,241,0.06); border: 1px solid rgba(99,102,241,0.15); border-radius: 12px; padding: 14px; }
+    .need-title { font-size: 12px; font-weight: 700; color: #818cf8; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .need-items { list-style: none; }
+    .need-items li { font-size: 11px; color: #94a3b8; padding: 3px 0; display: flex; gap: 6px; }
+    .need-items li::before { content: '·'; color: #6366f1; font-size: 16px; line-height: 1; margin-top: -2px; }
+
+    /* HAPPY CUSTOMER */
+    .happy-section { background: linear-gradient(135deg, rgba(56,189,248,0.08), rgba(99,102,241,0.08)); border: 1px solid rgba(56,189,248,0.2); border-radius: 20px; padding: 32px; text-align: center; margin-top: 10px; }
+    .happy-title { font-size: 26px; font-weight: 900; color: #fff; margin-bottom: 10px; }
+    .happy-desc { color: #94a3b8; font-size: 15px; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
+    .testimonial { background: rgba(255,255,255,0.04); border-radius: 14px; padding: 20px 24px; max-width: 480px; margin: 0 auto 20px; text-align: left; }
+    .testimonial-text { font-size: 15px; color: #e2e8f0; line-height: 1.6; font-style: italic; margin-bottom: 12px; }
+    .testimonial-author { font-size: 13px; color: #38bdf8; font-weight: 600; }
+    .referral-box { display: inline-flex; align-items: center; gap: 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); border-radius: 12px; padding: 14px 20px; }
+    .referral-text { font-size: 14px; color: #86efac; font-weight: 600; }
+
+    /* TIMELINE SUMMARY */
+    .summary-bar { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 50px 0 40px; }
+    .summary-item { text-align: center; }
+    .summary-time { font-size: 16px; font-weight: 900; color: #38bdf8; }
+    .summary-label { font-size: 10px; color: #64748b; margin-top: 4px; line-height: 1.3; }
+    .summary-divider { display: flex; align-items: center; justify-content: center; color: #1e293b; font-size: 20px; padding-top: 8px; }
+
+    /* PRINT */
+    .print-btn { position: fixed; top: 20px; right: 20px; background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: 13px; cursor: pointer; z-index: 100; }
+    @media print { .print-btn { display: none; } body { background: #fff; color: #0f172a; } }
+    @media (max-width: 600px) {
+      .info-grid, .needs-grid { grid-template-columns: 1fr; }
+      .summary-bar { grid-template-columns: repeat(3, 1fr); }
+      .title { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">● Nexcom AI · nexcomai.ai</div>
+    <h1 class="title">From <span>"I'm in"</span> to<br/>Live & Working in 48 Hours</h1>
+    <p class="subtitle">Here's exactly what happens after you say yes — every step, what we need from you, and what you'll have at the end.</p>
+    <div class="promise-bar">
+      <span class="promise-item">⚡ 48-hour setup</span>
+      <span class="promise-item">🤝 We do all the work</span>
+      <span class="promise-item">✅ You approve before go-live</span>
+      <span class="promise-item">🔄 Free tweaks for 30 days</span>
+    </div>
+  </div>
+
+  <!-- TIMELINE SUMMARY -->
+  <div class="summary-bar">
+    <div class="summary-item">
+      <div class="summary-time">Day 0</div>
+      <div class="summary-label">You say yes</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-time">Hour 2</div>
+      <div class="summary-label">Onboarding call</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-time">Hour 24</div>
+      <div class="summary-label">First draft ready</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-time">Hour 36</div>
+      <div class="summary-label">You review & approve</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-time">Hour 48</div>
+      <div class="summary-label">Go live 🚀</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-time">Day 7</div>
+      <div class="summary-label">First leads captured</div>
+    </div>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="timeline">
+
+    <!-- STEP 1 -->
+    <div class="step">
+      <div class="step-dot dot-blue">1</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-left">
+            <div class="step-time time-blue">Day 0 — Within 2 Hours of Signing Up</div>
+            <div class="step-title">Welcome & Onboarding Call</div>
+            <div class="step-desc">We schedule a 30-minute call to learn everything about your business. This is where we gather everything we need to build your AI assistant. You don't prep anything — just talk to us like you'd talk to a new employee on their first day.</div>
+          </div>
+          <div class="step-badge">
+            <div class="badge-icon">📞</div>
+            <div class="badge-label">30 min call</div>
+          </div>
+        </div>
+
+        <div class="needs-grid">
+          <div class="need-card">
+            <div class="need-title">🏢 Business Info</div>
+            <ul class="need-items">
+              <li>Business name & tagline</li>
+              <li>Service area / cities</li>
+              <li>Business hours</li>
+              <li>Emergency availability?</li>
+              <li>Website (if any)</li>
+            </ul>
+          </div>
+          <div class="need-card">
+            <div class="need-title">🔧 Services & Pricing</div>
+            <ul class="need-items">
+              <li>List of all services offered</li>
+              <li>Price ranges per service</li>
+              <li>Service call / diagnostic fee</li>
+              <li>Any packages or specials</li>
+              <li>What you DON'T do</li>
+            </ul>
+          </div>
+          <div class="need-card">
+            <div class="need-title">💬 Tone & Personality</div>
+            <ul class="need-items">
+              <li>Formal or casual tone?</li>
+              <li>Any phrases you always use</li>
+              <li>How to handle complaints</li>
+              <li>Preferred name (owner/contact)</li>
+              <li>Sample of a past customer reply</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="outcome">
+          <div class="outcome-icon">✅</div>
+          <div class="outcome-text">After this call, we have everything we need. You don't need to do anything else until we send you the draft.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2 -->
+    <div class="step">
+      <div class="step-dot dot-indigo">2</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-left">
+            <div class="step-time time-indigo">Hours 2–24 — We Build It</div>
+            <div class="step-title">AI Configuration & Training</div>
+            <div class="step-desc">Our team builds and trains your custom AI assistant using everything from the onboarding call. We write all the conversation flows, program the responses, set up the booking system, and connect your channels. You don't touch a single thing.</div>
+          </div>
+          <div class="step-badge">
+            <div class="badge-icon">⚙️</div>
+            <div class="badge-label">We do the work</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon">🧠</div>
+            <div class="info-text">
+              <div class="info-label">AI Training</div>
+              <div class="info-desc">We program your services, pricing, FAQs, emergency flows, and booking logic into the AI</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📱</div>
+            <div class="info-text">
+              <div class="info-label">Channel Setup</div>
+              <div class="info-desc">Connect your SMS number, website chat widget, and any social channels you want covered</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📅</div>
+            <div class="info-text">
+              <div class="info-label">Booking System</div>
+              <div class="info-desc">Set up appointment capture, confirmation messages, and calendar notifications for your team</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🔔</div>
+            <div class="info-text">
+              <div class="info-label">Alert System</div>
+              <div class="info-desc">Every new lead triggers an instant notification to you — text, email, or dashboard alert</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🚨</div>
+            <div class="info-text">
+              <div class="info-label">Emergency Flow</div>
+              <div class="info-desc">Special urgent response path with your emergency line, safety instructions, and priority handling</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🎨</div>
+            <div class="info-text">
+              <div class="info-label">Brand Voice</div>
+              <div class="info-desc">The AI is tuned to sound like your business — your tone, your name, your style. Not generic robot-speak</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="outcome">
+          <div class="outcome-icon">🛠️</div>
+          <div class="outcome-text">At the end of this phase, you have a fully configured AI assistant ready for your review. We send you a private test link.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 -->
+    <div class="step">
+      <div class="step-dot dot-green">3</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-left">
+            <div class="step-time time-green">Hours 24–36 — Your Turn (30 Minutes)</div>
+            <div class="step-title">Review, Test & Approve</div>
+            <div class="step-desc">We send you a private test link. You chat with your AI like a real customer would — ask it questions, try to book an appointment, test the emergency flow. If anything is off, tell us and we fix it within a few hours. This is YOUR product — it has to be perfect.</div>
+          </div>
+          <div class="step-badge">
+            <div class="badge-icon">🧪</div>
+            <div class="badge-label">You test it</div>
+          </div>
+        </div>
+
+        <div class="checklist">
+          <div class="check-item"><span class="check-icon">🔍</span><span>Test 5–10 common customer questions — does it answer correctly?</span></div>
+          <div class="check-item"><span class="check-icon">📅</span><span>Try booking an appointment — does the flow feel natural?</span></div>
+          <div class="check-item"><span class="check-icon">🚨</span><span>Test the emergency flow — is it fast and clear?</span></div>
+          <div class="check-item"><span class="check-icon">💰</span><span>Ask about pricing — are the numbers right?</span></div>
+          <div class="check-item"><span class="check-icon">🎭</span><span>Does the tone sound like your business?</span></div>
+          <div class="check-item"><span class="check-icon">📱</span><span>View it on your phone — does it look right?</span></div>
+        </div>
+
+        <div class="outcome">
+          <div class="outcome-icon">✅</div>
+          <div class="outcome-text">Once you say "looks good" — we flip the switch. Any tweaks you need are done within 4 hours, no charge.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 4 -->
+    <div class="step">
+      <div class="step-dot dot-yellow">4</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-left">
+            <div class="step-time time-yellow">Hour 48 — Go Live 🚀</div>
+            <div class="step-title">Launch Day</div>
+            <div class="step-desc">Your AI assistant goes live on your phone number, website, and connected channels. From this moment, every text, every missed call, every DM gets an instant intelligent response — 24 hours a day, 7 days a week. You go back to doing your job. The AI handles the rest.</div>
+          </div>
+          <div class="step-badge">
+            <div class="badge-icon">🚀</div>
+            <div class="badge-label">You're live!</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon">📲</div>
+            <div class="info-text">
+              <div class="info-label">SMS Goes Live</div>
+              <div class="info-desc">Your business number is now connected. Every text gets an instant reply</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🌐</div>
+            <div class="info-text">
+              <div class="info-label">Website Chat Active</div>
+              <div class="info-desc">Chat widget appears on your site — visitors can chat immediately</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">📊</div>
+            <div class="info-text">
+              <div class="info-label">Dashboard Access</div>
+              <div class="info-desc">You get login to your dashboard — see every lead, conversation, and booking in real time</div>
+            </div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🔔</div>
+            <div class="info-text">
+              <div class="info-label">Lead Alerts Active</div>
+              <div class="info-desc">Every new lead sends you an instant notification so you can follow up fast</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="outcome">
+          <div class="outcome-icon">💰</div>
+          <div class="outcome-text">Most clients capture their first missed lead within the first 24 hours of going live.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 5 -->
+    <div class="step">
+      <div class="step-dot dot-pink">5</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-left">
+            <div class="step-time time-pink">Days 7–30 — Optimization</div>
+            <div class="step-title">Tune, Improve & Expand</div>
+            <div class="step-desc">After the first week, we review how the AI is performing — what questions customers are asking, what's working great, and what could be better. We tune the responses, add anything that's missing, and suggest upgrades based on real data from your customers.</div>
+          </div>
+          <div class="step-badge">
+            <div class="badge-icon">📈</div>
+            <div class="badge-label">Gets smarter</div>
+          </div>
+        </div>
+
+        <div class="checklist">
+          <div class="check-item"><span class="check-icon">📊</span><span>Weekly performance review — leads captured, response rate, booking conversions</span></div>
+          <div class="check-item"><span class="check-icon">🔧</span><span>Any new FAQs customers asked get added to the AI</span></div>
+          <div class="check-item"><span class="check-icon">💬</span><span>Conversation quality review — fix any awkward responses</span></div>
+          <div class="check-item"><span class="check-icon">📱</span><span>Expand to additional channels if needed (Facebook, Instagram, WhatsApp)</span></div>
+          <div class="check-item"><span class="check-icon">⭐</span><span>Review request flow activated — happy customers get asked for Google reviews</span></div>
+          <div class="check-item"><span class="check-icon">🗓️</span><span>Monthly check-in call — 15 minutes, make sure everything is running perfectly</span></div>
+        </div>
+
+        <div class="outcome">
+          <div class="outcome-icon">🎯</div>
+          <div class="outcome-text">By day 30, your AI has handled real customer conversations and is tuned to your exact business. It gets better every week.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 6 — HAPPY CUSTOMER -->
+    <div class="step">
+      <div class="step-dot dot-teal">6</div>
+      <div class="step-card">
+        <div class="step-header">
+          <div class="step-left">
+            <div class="step-time time-teal">Day 30+ — The Result</div>
+            <div class="step-title">Happy Customer. More Referrals. More Revenue.</div>
+            <div class="step-desc">Your AI is running smoothly, capturing leads around the clock, booking jobs while you sleep, and making your business look more professional than ever. Customers love the instant responses. You love the extra jobs. And you start telling other business owners about it.</div>
+          </div>
+          <div class="step-badge">
+            <div class="badge-icon">🎉</div>
+            <div class="badge-label">ROI achieved</div>
+          </div>
+        </div>
+
+        <div class="happy-section">
+          <div class="happy-title">This is the goal 🎯</div>
+          <div class="happy-desc">A client who's so happy with the results that they become your best salesperson.</div>
+
+          <div class="testimonial">
+            <div class="testimonial-text">"I used to miss 3–4 calls a day when I was on jobs. Now my AI handles everything. Last month it booked 6 jobs I would've completely lost. Paid for itself in the first week."</div>
+            <div class="testimonial-author">— Carlos M., Suncoast Plumbing · Tampa Bay, FL</div>
+          </div>
+
+          <div class="referral-box">
+            <span style="font-size:24px">🤝</span>
+            <div class="referral-text">Happy clients refer other business owners → your client list grows without cold calls</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM CTA -->
+  <div style="text-align:center; margin-top: 50px; padding: 40px; background: rgba(56,189,248,0.05); border: 1px solid rgba(56,189,248,0.15); border-radius: 20px;">
+    <div style="font-size: 28px; font-weight: 900; margin-bottom: 10px;">Ready to get started?</div>
+    <div style="color: #94a3b8; font-size: 15px; margin-bottom: 24px;">The whole process takes less than 48 hours. You don't need any tech skills.<br/>We handle everything — you just approve and launch.</div>
+    <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;">nexcomai.ai</div>
+    <div style="color: #64748b; font-size: 13px;">hello@nexcomai.ai · Tampa Bay, FL</div>
+  </div>
+
+</div>
+</body>
+</html>

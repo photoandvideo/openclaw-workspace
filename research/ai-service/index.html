@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexcom AI — AI Assistant for Local Businesses</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    .accent { color: #38bdf8; }
+    .accent-bg { background-color: #38bdf8; }
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .glow { box-shadow: 0 0 40px rgba(56,189,248,0.15); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.6s ease forwards; }
+  </style>
+</head>
+<body class="gradient-bg text-white min-h-screen">
+
+  <!-- NAV -->
+  <nav class="flex justify-between items-center px-6 py-5 max-w-6xl mx-auto">
+    <div class="text-xl font-bold tracking-tight">
+      <span class="accent">●</span> Nexcom<span class="text-slate-400">AI</span>
+    </div>
+    <a href="#contact" class="accent-bg text-slate-900 font-semibold px-5 py-2 rounded-full text-sm hover:brightness-110 transition">
+      Book Free Demo
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="text-center px-6 py-24 max-w-4xl mx-auto fade-up">
+    <div class="inline-block bg-sky-500/10 text-sky-400 text-sm font-medium px-4 py-1 rounded-full mb-6 border border-sky-500/20">
+      Built for local businesses in the Tampa Bay area
+    </div>
+    <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+      Never miss a lead.<br/><span class="accent">Even when you're on the job.</span>
+    </h1>
+    <p class="text-slate-400 text-xl mb-10 max-w-2xl mx-auto">
+      We set up an AI assistant that answers your calls, texts, and messages 24/7 — booking appointments, answering FAQs, and following up on leads automatically.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="demo.html" class="accent-bg text-slate-900 font-bold px-8 py-4 rounded-full text-lg hover:brightness-110 transition glow">
+        See Live Demo →
+      </a>
+      <a href="#contact" class="border border-slate-600 text-white font-semibold px-8 py-4 rounded-full text-lg hover:border-sky-400 transition">
+        Get Started Free
+      </a>
+    </div>
+  </section>
+
+  <!-- SOCIAL PROOF -->
+  <section class="text-center py-6 px-6">
+    <p class="text-slate-500 text-sm mb-4">Trusted by local businesses in</p>
+    <div class="flex flex-wrap justify-center gap-8 text-slate-400 font-medium text-sm">
+      <span>🔧 Plumbing & HVAC</span>
+      <span>🏠 Real Estate</span>
+      <span>🧹 Cleaning Services</span>
+      <span>⚡ Electricians</span>
+      <span>🌿 Lawn Care</span>
+      <span>🦟 Pest Control</span>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="py-24 px-6 max-w-5xl mx-auto">
+    <h2 class="text-3xl font-bold text-center mb-4">How it works</h2>
+    <p class="text-slate-400 text-center mb-16">We handle everything. You just get more customers.</p>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="card rounded-2xl p-8 text-center">
+        <div class="text-4xl mb-4">📞</div>
+        <h3 class="font-bold text-lg mb-2">1. We set it up</h3>
+        <p class="text-slate-400 text-sm">We configure your AI assistant with your business info, services, pricing, and FAQs. Done in 24–48 hours.</p>
+      </div>
+      <div class="card rounded-2xl p-8 text-center">
+        <div class="text-4xl mb-4">🤖</div>
+        <h3 class="font-bold text-lg mb-2">2. It handles everything</h3>
+        <p class="text-slate-400 text-sm">Your assistant answers texts, DMs, and missed calls — 24/7. Books appointments, qualifies leads, answers questions.</p>
+      </div>
+      <div class="card rounded-2xl p-8 text-center">
+        <div class="text-4xl mb-4">💰</div>
+        <h3 class="font-bold text-lg mb-2">3. You get more jobs</h3>
+        <p class="text-slate-400 text-sm">No more lost leads while you're on the job. Every message gets a response. Every lead gets followed up.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO CTA -->
+  <section class="py-16 px-6 max-w-3xl mx-auto text-center">
+    <div class="card rounded-3xl p-12 glow">
+      <div class="text-5xl mb-4">💬</div>
+      <h2 class="text-3xl font-bold mb-4">Try it right now</h2>
+      <p class="text-slate-400 mb-8">Chat with a demo AI assistant set up for a local plumbing company. This is exactly what your customers would experience.</p>
+      <a href="demo.html" class="accent-bg text-slate-900 font-bold px-8 py-4 rounded-full text-lg hover:brightness-110 transition inline-block">
+        Open Live Demo →
+      </a>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="py-24 px-6 max-w-5xl mx-auto" id="pricing">
+    <h2 class="text-3xl font-bold text-center mb-4">Simple pricing</h2>
+    <p class="text-slate-400 text-center mb-16">No tech knowledge needed. We handle setup and support.</p>
+    <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+      <div class="card rounded-2xl p-8">
+        <div class="text-sky-400 text-sm font-semibold mb-2">STARTER</div>
+        <div class="text-4xl font-extrabold mb-1">$500</div>
+        <div class="text-slate-400 text-sm mb-6">one-time setup + $300/mo</div>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li>✅ Custom AI assistant setup</li>
+          <li>✅ SMS & messaging integration</li>
+          <li>✅ FAQ + appointment booking</li>
+          <li>✅ Monthly check-ins</li>
+          <li>✅ Cancel anytime</li>
+        </ul>
+        <a href="#contact" class="mt-8 block text-center border border-sky-400 text-sky-400 font-semibold py-3 rounded-full hover:bg-sky-400 hover:text-slate-900 transition">
+          Get Started
+        </a>
+      </div>
+      <div class="card rounded-2xl p-8 border-sky-500/40 relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2 accent-bg text-slate-900 text-xs font-bold px-4 py-1 rounded-full">MOST POPULAR</div>
+        <div class="text-sky-400 text-sm font-semibold mb-2">GROWTH</div>
+        <div class="text-4xl font-extrabold mb-1">$1,000</div>
+        <div class="text-slate-400 text-sm mb-6">one-time setup + $500/mo</div>
+        <ul class="space-y-3 text-sm text-slate-300">
+          <li>✅ Everything in Starter</li>
+          <li>✅ Multi-channel (SMS, email, IG, FB)</li>
+          <li>✅ Lead follow-up sequences</li>
+          <li>✅ Weekly performance reports</li>
+          <li>✅ Priority support</li>
+        </ul>
+        <a href="#contact" class="mt-8 block text-center accent-bg text-slate-900 font-bold py-3 rounded-full hover:brightness-110 transition">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="py-24 px-6 max-w-2xl mx-auto" id="contact">
+    <h2 class="text-3xl font-bold text-center mb-4">Book your free demo</h2>
+    <p class="text-slate-400 text-center mb-10">We'll show you exactly how it works for your type of business. No pressure, no commitment.</p>
+    <form class="card rounded-2xl p-8 space-y-4" onsubmit="handleSubmit(event)">
+      <div>
+        <label class="text-sm text-slate-400 mb-1 block">Your name</label>
+        <input type="text" placeholder="John Smith" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" required />
+      </div>
+      <div>
+        <label class="text-sm text-slate-400 mb-1 block">Business name</label>
+        <input type="text" placeholder="Smith Plumbing LLC" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" required />
+      </div>
+      <div>
+        <label class="text-sm text-slate-400 mb-1 block">Phone / WhatsApp</label>
+        <input type="tel" placeholder="+1 (727) 000-0000" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sky-400" required />
+      </div>
+      <div>
+        <label class="text-sm text-slate-400 mb-1 block">Type of business</label>
+        <select class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-sky-400">
+          <option>Plumbing / HVAC</option>
+          <option>Electrical</option>
+          <option>Real Estate</option>
+          <option>Cleaning Service</option>
+          <option>Lawn Care / Landscaping</option>
+          <option>Pest Control</option>
+          <option>Roofing / Construction</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <button type="submit" class="w-full accent-bg text-slate-900 font-bold py-4 rounded-xl text-lg hover:brightness-110 transition">
+        Book My Free Demo →
+      </button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-10 text-slate-600 text-sm border-t border-slate-800">
+    <p>© 2026 Nexcom AI · Clearwater, FL · nexcomai.ai</p>
+  </footer>
+
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.textContent = '✅ Got it! We\'ll reach out within 24h.';
+      btn.disabled = true;
+      btn.classList.remove('hover:brightness-110');
+    }
+  </script>
+</body>
+</html>

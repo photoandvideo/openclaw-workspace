@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Suncoast Plumbing — AI Assistant Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #e8f4f8; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 16px; }
+
+    .demo-badge { background: #fff3cd; border: 1px solid #ffc107; color: #856404; font-size: 11px; font-weight: 700; padding: 5px 14px; border-radius: 999px; margin-bottom: 10px; letter-spacing: 0.5px; text-transform: uppercase; }
+
+    .chat-window { width: 100%; max-width: 420px; background: #f0f2f5; border-radius: 0; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.18); display: flex; flex-direction: column; height: 700px; border-radius: 16px; }
+
+    /* HEADER */
+    .chat-header { background: #075e54; padding: 10px 14px; display: flex; align-items: center; gap: 10px; }
+    .back-btn { color: rgba(255,255,255,0.8); font-size: 20px; cursor: pointer; }
+    .avatar-wrap { position: relative; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #25d366, #128c7e); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; overflow: hidden; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+    .online-dot { position: absolute; bottom: 1px; right: 1px; width: 10px; height: 10px; background: #25d366; border-radius: 50%; border: 2px solid #075e54; }
+    .header-info { flex: 1; }
+    .header-name { color: #fff; font-weight: 600; font-size: 15px; }
+    .header-status { color: rgba(255,255,255,0.75); font-size: 12px; }
+    .header-icons { display: flex; gap: 18px; color: rgba(255,255,255,0.85); font-size: 18px; }
+
+    /* MESSAGES AREA */
+    #messages { flex: 1; overflow-y: auto; padding: 10px 12px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Crect width='400' height='400' fill='%23e5ddd5'/%3E%3C/svg%3E"); display: flex; flex-direction: column; gap: 3px; }
+
+    .msg-row { display: flex; margin: 1px 0; }
+    .msg-row.bot { justify-content: flex-start; }
+    .msg-row.user { justify-content: flex-end; }
+
+    .bubble { max-width: 82%; padding: 8px 12px 6px; font-size: 14px; line-height: 1.45; position: relative; word-wrap: break-word; }
+    .bubble.bot { background: #fff; border-radius: 0 8px 8px 8px; color: #111; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+    .bubble.user { background: #dcf8c6; border-radius: 8px 0 8px 8px; color: #111; box-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+    .bubble .time { font-size: 11px; color: #999; float: right; margin-left: 8px; margin-top: 2px; }
+    .bubble.user .time::after { content: ' ✓✓'; color: #53bdeb; }
+    .bubble strong { font-weight: 600; }
+    .bubble a { color: #075e54; text-decoration: underline; }
+
+    /* DATE DIVIDER */
+    .date-divider { text-align: center; margin: 8px 0; }
+    .date-divider span { background: #e1f2fb; color: #546e7a; font-size: 11.5px; padding: 4px 12px; border-radius: 8px; font-weight: 500; }
+
+    /* TYPING */
+    .typing-wrap { display: flex; justify-content: flex-start; margin: 2px 0; }
+    .typing-bubble { background: #fff; border-radius: 0 8px 8px 8px; padding: 10px 14px; box-shadow: 0 1px 1px rgba(0,0,0,0.1); display: flex; gap: 4px; align-items: center; }
+    .dot { width: 8px; height: 8px; background: #aaa; border-radius: 50%; animation: bounce 1.3s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+    /* QUICK REPLIES */
+    #quick-replies { padding: 8px 10px 4px; background: #f0f2f5; display: flex; flex-wrap: wrap; gap: 6px; min-height: 0; }
+    .qbtn { font-size: 13px; padding: 7px 14px; border-radius: 999px; border: 1.5px solid #075e54; background: #fff; color: #075e54; cursor: pointer; font-weight: 500; transition: all 0.15s; white-space: nowrap; }
+    .qbtn:hover, .qbtn:active { background: #075e54; color: #fff; }
+
+    /* INPUT BAR */
+    .input-bar { padding: 8px 10px; background: #f0f2f5; display: flex; align-items: center; gap: 8px; }
+    .input-wrap { flex: 1; background: #fff; border-radius: 24px; padding: 9px 16px; display: flex; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+    #user-input { flex: 1; border: none; outline: none; font-size: 15px; color: #111; background: transparent; }
+    #user-input::placeholder { color: #aaa; }
+    .emoji-btn { color: #aaa; font-size: 20px; cursor: pointer; margin-right: 4px; }
+    .send-btn { width: 42px; height: 42px; border-radius: 50%; background: #075e54; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+    .send-btn:hover { background: #128c7e; }
+    .send-btn svg { width: 20px; height: 20px; fill: white; }
+
+    /* CARDS */
+    .service-card { background: #fff; border-radius: 12px; overflow: hidden; margin-top: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); max-width: 260px; }
+    .service-card-header { background: linear-gradient(135deg, #075e54, #128c7e); padding: 12px 14px; color: #fff; }
+    .service-card-header h4 { font-size: 14px; font-weight: 700; }
+    .service-card-header p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+    .service-card-body { padding: 10px 14px; }
+    .service-item { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .service-item:last-child { border-bottom: none; }
+    .service-price { color: #075e54; font-weight: 600; }
+    .card-btn { display: block; text-align: center; background: #25d366; color: #fff; font-weight: 700; font-size: 13px; padding: 8px; border-radius: 8px; margin-top: 8px; cursor: pointer; border: none; width: 100%; }
+    .card-btn:hover { background: #128c7e; }
+
+    /* BACK LINK */
+    .back-link { font-size: 12px; color: #546e7a; margin-top: 10px; text-align: center; }
+    .back-link a { color: #075e54; text-decoration: none; font-weight: 600; }
+
+    /* POWERED BY */
+    .powered-by { font-size: 11px; color: #999; text-align: center; margin-top: 6px; }
+    .powered-by a { color: #075e54; text-decoration: none; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="demo-badge">🎯 Live Demo — Powered by Nexcom AI</div>
+
+  <div class="chat-window">
+    <!-- HEADER -->
+    <div class="chat-header">
+      <div class="back-btn">‹</div>
+      <div class="avatar-wrap">
+        <div class="avatar">🔧</div>
+        <div class="online-dot"></div>
+      </div>
+      <div class="header-info">
+        <div class="header-name">Suncoast Plumbing</div>
+        <div class="header-status">Online now · Tampa Bay, FL</div>
+      </div>
+      <div class="header-icons">
+        <span>📞</span>
+        <span>⋮</span>
+      </div>
+    </div>
+
+    <!-- MESSAGES -->
+    <div id="messages">
+      <div class="date-divider"><span>TODAY</span></div>
+    </div>
+
+    <!-- QUICK REPLIES -->
+    <div id="quick-replies"></div>
+
+    <!-- INPUT -->
+    <div class="input-bar">
+      <div class="input-wrap">
+        <span class="emoji-btn">😊</span>
+        <input id="user-input" type="text" placeholder="Message" onkeydown="if(event.key==='Enter')sendMessage()" />
+      </div>
+      <button class="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="back-link"><a href="index.html">← Back to Nexcom AI</a></div>
+  <div class="powered-by">This is what your customers would experience · <a href="https://nexcomai.ai">nexcomai.ai</a></div>
+
+<script>
+const BIZ = {
+  name: 'Suncoast Plumbing',
+  owner: 'Carlos',
+  phone: '(727) 555-0198',
+  emergency: '(727) 555-0199',
+  area: 'Tampa Bay',
+  hours: 'Mon–Fri 7am–6pm · Sat 8am–2pm',
+};
+
+let state = { step: 'start', name: null, issue: null, address: null, time: null, apptConfirmed: false };
+
+function now() {
+  return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+function msgs() { return document.getElementById('messages'); }
+
+function scrollDown() {
+  setTimeout(() => { msgs().scrollTop = msgs().scrollHeight; }, 50);
+}
+
+function addMsg(html, isUser, delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'msg-row ' + (isUser ? 'user' : 'bot');
+      const b = document.createElement('div');
+      b.className = 'bubble ' + (isUser ? 'user' : 'bot');
+      b.innerHTML = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>') + `<span class="time">${now()}</span>`;
+      row.appendChild(b);
+      msgs().appendChild(row);
+      scrollDown();
+      resolve();
+    }, delay);
+  });
+}
+
+function addCard(delay = 0) {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      const row = document.createElement('div');
+      row.className = 'msg-row bot';
+      row.innerHTML = `
+        <div class="service-card">
+          <div class="service-card-header">
+            <h4>🔧 Suncoast Plumbing</h4>
+            <p>Serving Tampa Bay since 2008</p>
+          </div>
+          <div class="service-card-body">
+            <div class="service-item"><span>Drain Cleaning</span><span class="service-price">$120–$180</span></div>
+            <div class="service-item"><span>Leak Repair</span><span class="service-price">$150–$400</span></div>
+            <div class="service-item"><span>Water Heater</span><span class="service-price">$800–$1,500</span></div>
+            <div class="service-item"><span>Toilet Repair</span><span class="service-price">$100–$250</span></div>
+            <div class="service-item"><span>Service Call</span><span class="service-price">$89 (waived w/ repair)</span></div>
+            <button class="card-btn" onclick="handleMsg('I want to book an appointment')">📅 Book Now</button>
+          </div>
+        </div>`;
+      msgs().appendChild(row);
+      scrollDown();
+      resolve();
+    }, delay);
+  });
+}
+
+function showTyping() {
+  removeTyping();
+  const w = document.createElement('div');
+  w.className = 'typing-wrap'; w.id = 'typing';
+  w.innerHTML = '<div class="typing-bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  msgs().appendChild(w);
+  scrollDown();
+}
+function removeTyping() { const e = document.getElementById('typing'); if (e) e.remove(); }
+
+function setQR(items) {
+  const c = document.getElementById('quick-replies');
+  c.innerHTML = '';
+  items.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'qbtn'; b.textContent = t;
+    b.onclick = () => handleMsg(t);
+    c.appendChild(b);
+  });
+  scrollDown();
+}
+
+// ── RESPONSES ────────────────────────────────────────────────
+const intents = [
+  {
+    match: t => /^(hi|hello|hey|start|hola|good\s?(morning|afternoon|evening)|yes please|help)/.test(t),
+    respond: async () => {
+      await addMsg(`Hi there! 👋 Welcome to **Suncoast Plumbing**. I'm the 24/7 assistant for Carlos and the team.\n\nHow can I help you today?`);
+      setQR(['📅 Book a service call', '💰 Get a price estimate', '🚨 Emergency — need help NOW', '🔧 What services do you offer?']);
+    }
+  },
+  {
+    match: t => /emergency|urgent|flood|burst|water everywhere|pipe burst|overflow|help now|asap/.test(t),
+    respond: async () => {
+      await addMsg(`🚨 **This is an emergency — calling Carlos now!**\n\nEmergency line: **${BIZ.emergency}**\nAvailable **24 hours, 7 days a week**\n\nTypically on-site within **30–45 minutes** in Tampa Bay.`);
+      await addMsg(`⚡ **While you wait — turn off your main water shutoff:**\n\n🏠 Inside: under the kitchen sink, garage, or near water heater\n🌿 Outside: near the street by the water meter\n\nTurn **clockwise** to shut off.`, false, 1200);
+      setQR(['📞 Call emergency line', '📅 Schedule a regular call instead', '💰 How much will this cost?']);
+    }
+  },
+  {
+    match: t => /book|schedule|appointment|available|come out|visit|send someone|next available/.test(t),
+    respond: async () => {
+      state.step = 'book_issue';
+      await addMsg(`I'd be happy to get that scheduled! 📅\n\nFirst — what's the issue you're dealing with?`);
+      setQR(['🚿 Drain clog', '💧 Leak / dripping', '🔥 Water heater', '🚽 Toilet issue', '🔍 Not sure — need inspection']);
+    }
+  },
+  {
+    match: t => state.step === 'book_issue',
+    respond: async (t) => {
+      state.issue = t; state.step = 'book_address';
+      await addMsg(`Got it — **${t}**. We can usually get someone out **same day or next morning**.\n\nWhat's your address? (We serve all of Tampa Bay — Clearwater, St. Pete, Tampa, Dunedin, Palm Harbor)`);
+      setQR([]);
+    }
+  },
+  {
+    match: t => state.step === 'book_address',
+    respond: async (t) => {
+      state.address = t; state.step = 'book_time';
+      await addMsg(`Perfect, we service that area! ✅\n\nWhat time works best for you?`);
+      setQR(['Tomorrow morning (7–10am)', 'Tomorrow afternoon (12–3pm)', 'This weekend', 'ASAP — today if possible']);
+    }
+  },
+  {
+    match: t => state.step === 'book_time',
+    respond: async (t) => {
+      state.time = t; state.step = 'book_name';
+      await addMsg(`${t} works! Almost done — what's your name?`);
+      setQR([]);
+    }
+  },
+  {
+    match: t => state.step === 'book_name',
+    respond: async (t) => {
+      state.name = t; state.step = 'booked';
+      await addMsg(`Got it, **${t}**! 🎉\n\nHere's your booking summary:\n📍 **Address:** ${state.address}\n🔧 **Issue:** ${state.issue}\n⏰ **Time:** ${state.time}\n\nCarlos will call you **30 minutes before arrival** to confirm.\n\nIs there a phone number he should use?`);
+      setQR(['Use the number I texted from', 'Let me give you a different number']);
+    }
+  },
+  {
+    match: t => state.step === 'booked' || /use.*number|same number|this number/.test(t),
+    respond: async () => {
+      state.step = 'done';
+      await addMsg(`✅ **You're all booked!**\n\nCarlos and the team will take great care of you. You'll get a confirmation text shortly.\n\nAnything else I can help with?`);
+      setQR(['💰 What will this cost?', '⭐ Leave a review', '🔧 Ask another question', "I'm all set, thanks!"]);
+    }
+  },
+  {
+    match: t => /price|cost|how much|estimate|quote|charge|fee|rates/.test(t),
+    respond: async () => {
+      await addMsg(`Here's what we typically charge:`);
+      await addCard(300);
+      setTimeout(() => setQR(['📅 Book now', '🔥 Water heater question', '💧 Leak question', '🚿 Drain question']), 600);
+    }
+  },
+  {
+    match: t => /water heater|hot water|no hot water|heater broken/.test(t),
+    respond: async () => {
+      await addMsg(`No hot water is miserable! 😬 We handle water heater repairs and full replacements.\n\n**Typical costs:**\n• Tank repair: $150–$350\n• New 40-gal tank install: $800–$1,100\n• Tankless upgrade: $1,200–$1,800\n\nMost jobs are done **same day**. Want to book a diagnostic visit?`);
+      setQR(['📅 Yes, book me in', '💡 What brands do you carry?', '⏱️ How long does it take?']);
+    }
+  },
+  {
+    match: t => /drain|clog|slow drain|backup|blocked/.test(t),
+    respond: async () => {
+      await addMsg(`Drain clogs are one of our most common calls! 🔧\n\n**Drain cleaning: $120–$180**\nIncludes full snake or hydro-jet treatment + **30-day guarantee**.\n\nWe can usually be there **same day**. Want to get on the schedule?`);
+      setQR(['📅 Book same-day', '🚽 It\'s a toilet clog', '🏠 It\'s the main line']);
+    }
+  },
+  {
+    match: t => /leak|drip|dripping|running water|pipe|wet spot/.test(t),
+    respond: async () => {
+      await addMsg(`Leaks can cause serious damage if ignored — good call reaching out! 💧\n\n**Leak repair: $150–$400** depending on location and severity.\n\nWe'll do a full diagnostic ($89, waived if you go ahead with the repair).\n\nShould I get Carlos out to take a look?`);
+      setQR(['📅 Yes, book a visit', '🚨 It\'s getting worse — emergency!', '💰 Is the $89 waived?']);
+    }
+  },
+  {
+    match: t => /service|what do you|what can|offer|speciali/.test(t),
+    respond: async () => {
+      await addMsg(`Here's what **Suncoast Plumbing** handles:`);
+      await addCard(300);
+      setTimeout(() => setQR(['📅 Book a visit', '💰 Get an estimate', '🚨 Emergency help']), 600);
+    }
+  },
+  {
+    match: t => /area|location|cover|service area|where|come to|clearwater|tampa|st pete|dunedin/.test(t),
+    respond: async () => {
+      await addMsg(`We cover all of **Tampa Bay**! 📍\n\nClearwater · St. Petersburg · Tampa · Dunedin · Palm Harbor · Safety Harbor · Tarpon Springs · Largo · Seminole\n\nIf you're in Pinellas or Hillsborough County, we've got you covered. What's your address?`);
+      setQR(['📅 Book a visit', '💰 Get a price']);
+    }
+  },
+  {
+    match: t => /hours|open|available|when|weekend|sunday/.test(t),
+    respond: async () => {
+      await addMsg(`Our regular hours are:\n\n🗓️ **Mon–Fri:** 7:00 AM – 6:00 PM\n🗓️ **Saturday:** 8:00 AM – 2:00 PM\n🚨 **Emergencies:** 24/7 at ${BIZ.emergency}\n\nWant to book something?`);
+      setQR(['📅 Book now', '🚨 I have an emergency']);
+    }
+  },
+  {
+    match: t => /guarantee|warranty|licensed|insured|trust/.test(t),
+    respond: async () => {
+      await addMsg(`Great questions — here's what we stand behind:\n\n✅ **Licensed & insured** in Florida\n✅ **90-day labor warranty** on all repairs\n✅ **Manufacturer warranty** on all parts\n✅ **30-day guarantee** on drain cleaning\n✅ **15+ years** serving Tampa Bay\n\nIf anything isn't right, we come back — no charge, no hassle.`);
+      setQR(['📅 Book now', '💰 Get a price estimate']);
+    }
+  },
+  {
+    match: t => /review|rating|google|yelp|feedback|stars/.test(t),
+    respond: async () => {
+      await addMsg(`⭐ Thank you for asking! We'd love a review — it means everything to a small family business.\n\nYou can leave us a Google review here:\n🔗 **g.page/suncoastplumbing** (demo link)\n\nEven a few words makes a huge difference. Thank you! 🙏`);
+      setQR(['📅 Book another service', "I'm all set, thanks!"]);
+    }
+  },
+  {
+    match: t => /talk|call|speak|carlos|human|real person|agent|owner/.test(t),
+    respond: async () => {
+      await addMsg(`Of course! Carlos is available during business hours:\n\n📞 **${BIZ.phone}**\n🕐 Mon–Fri 7am–6pm · Sat 8am–2pm\n\nOr I can have him call you back — just give me your name and best number!`);
+      setQR(['📞 I\'ll call now', 'Have Carlos call me', '📅 Just book me instead']);
+    }
+  },
+  {
+    match: t => /thank|thanks|awesome|great|perfect|amazing|sounds good|all set|done|bye|goodbye/.test(t),
+    respond: async () => {
+      await addMsg(`Happy to help! 😊 Carlos and the Suncoast team will take great care of you.\n\nHave a great day — and remember, we're here 24/7 if anything comes up! 🔧`);
+      setQR(['📅 Book another service', '⭐ Leave us a review']);
+    }
+  },
+];
+
+// ── HANDLER ──────────────────────────────────────────────────
+let fallbackCount = 0;
+const fallbacks = [
+  `I want to make sure I help you correctly! Could you tell me a bit more about what you need?`,
+  `Let me get you connected with the right info. Are you looking to book a service, get a price, or something else?`,
+  `Carlos or a team member can also help directly at **${BIZ.phone}** during business hours.`
+];
+
+async function handleMsg(text) {
+  setQR([]);
+  await addMsg(text, true);
+  showTyping();
+  const lower = text.toLowerCase().trim();
+  const delay = 800 + Math.random() * 600;
+
+  setTimeout(async () => {
+    removeTyping();
+
+    // STATE-BASED steps always win — check these first before keyword matching
+    const stateSteps = ['book_issue', 'book_address', 'book_time', 'book_name', 'booked', 'name_show', 'phone_show', 'date_show'];
+    if (stateSteps.includes(state.step)) {
+      const stateIntent = intents.find(i => i.match(lower));
+      if (stateIntent) {
+        fallbackCount = 0;
+        await stateIntent.respond(lower);
+        return;
+      }
+    }
+
+    // Normal keyword matching
+    const intent = intents.find(i => i.match(lower));
+    if (intent) {
+      fallbackCount = 0;
+      await intent.respond(lower);
+    } else {
+      await addMsg(fallbacks[fallbackCount % fallbacks.length]);
+      fallbackCount++;
+      setQR(['📅 Book a service', '💰 Get a price', '🚨 Emergency', '🔧 Services & pricing']);
+    }
+  }, delay);
+}
+
+function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim(); if (!text) return;
+  input.value = ''; handleMsg(text);
+}
+
+// ── BOOT ─────────────────────────────────────────────────────
+window.onload = () => {
+  setTimeout(() => addMsg(`👋 Hi! Welcome to **Suncoast Plumbing** — Tampa Bay's trusted plumbers since 2008.\n\nI'm available 24/7 to help with bookings, pricing, and emergencies. How can I help?`), 600);
+  setTimeout(() => setQR(['📅 Book a service call', '💰 Get a price estimate', '🚨 Emergency — need help NOW', '🔧 What services do you offer?']), 1800);
+};
+</script>
+</body>
+</html>

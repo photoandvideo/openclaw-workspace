@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexcom AI — How It Works</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f172a; color: #fff; min-height: 100vh; padding: 40px 20px; }
+
+    .page { max-width: 1100px; margin: 0 auto; }
+
+    /* HEADER */
+    .header { text-align: center; margin-bottom: 60px; }
+    .logo { font-size: 15px; font-weight: 700; color: #38bdf8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+    .title { font-size: 42px; font-weight: 900; line-height: 1.1; margin-bottom: 14px; }
+    .title span { color: #38bdf8; }
+    .subtitle { color: #94a3b8; font-size: 17px; max-width: 600px; margin: 0 auto; }
+
+    /* SECTION LABEL */
+    .section-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #38bdf8; margin-bottom: 20px; }
+
+    /* FLOW SECTIONS */
+    .flow-section { margin-bottom: 50px; }
+
+    /* STEP ROWS */
+    .step-row { display: flex; align-items: stretch; gap: 16px; margin-bottom: 16px; }
+
+    /* CARDS */
+    .card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 20px; flex: 1; position: relative; transition: border-color 0.2s; }
+    .card:hover { border-color: rgba(56,189,248,0.3); }
+    .card-icon { font-size: 28px; margin-bottom: 10px; }
+    .card-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+    .card-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+    .card-tag { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; margin-top: 8px; }
+    .tag-blue { background: rgba(56,189,248,0.15); color: #38bdf8; }
+    .tag-green { background: rgba(34,197,94,0.15); color: #22c55e; }
+    .tag-orange { background: rgba(251,146,60,0.15); color: #fb923c; }
+    .tag-purple { background: rgba(167,139,250,0.15); color: #a78bfa; }
+
+    /* ARROW */
+    .arrow-down { text-align: center; font-size: 28px; color: #38bdf8; margin: 8px 0; line-height: 1; }
+    .arrow-right { display: flex; align-items: center; justify-content: center; color: #38bdf8; font-size: 22px; padding: 0 4px; flex-shrink: 0; align-self: center; }
+
+    /* CENTER BOX — AI BRAIN */
+    .ai-brain { background: linear-gradient(135deg, rgba(56,189,248,0.15), rgba(99,102,241,0.15)); border: 1.5px solid rgba(56,189,248,0.4); border-radius: 20px; padding: 28px; text-align: center; margin-bottom: 16px; position: relative; overflow: hidden; }
+    .ai-brain::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(56,189,248,0.05) 0%, transparent 70%); pointer-events: none; }
+    .ai-brain-icon { font-size: 48px; margin-bottom: 12px; }
+    .ai-brain-title { font-size: 22px; font-weight: 900; color: #38bdf8; margin-bottom: 8px; }
+    .ai-brain-desc { color: #cbd5e1; font-size: 14px; max-width: 500px; margin: 0 auto 16px; line-height: 1.6; }
+    .ai-features { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+    .ai-feature { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); border-radius: 999px; font-size: 12px; color: #7dd3fc; padding: 4px 12px; font-weight: 500; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 40px 0; }
+
+    /* STORAGE ROW */
+    .storage-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 16px; }
+    .storage-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; padding: 16px; text-align: center; }
+    .storage-card .s-icon { font-size: 24px; margin-bottom: 8px; }
+    .storage-card .s-title { font-size: 12px; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
+    .storage-card .s-desc { font-size: 11px; color: #64748b; line-height: 1.4; }
+
+    /* OUTPUT ROW */
+    .output-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .output-card { border-radius: 14px; padding: 18px; text-align: center; }
+    .output-card.green { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); }
+    .output-card.blue { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.2); }
+    .output-card.purple { background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); }
+    .output-card .o-icon { font-size: 28px; margin-bottom: 8px; }
+    .output-card .o-title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .output-card.green .o-title { color: #22c55e; }
+    .output-card.blue .o-title { color: #38bdf8; }
+    .output-card.purple .o-title { color: #a78bfa; }
+    .output-card .o-items { list-style: none; text-align: left; }
+    .output-card .o-items li { font-size: 11px; color: #94a3b8; padding: 3px 0; display: flex; align-items: flex-start; gap: 6px; }
+    .output-card .o-items li::before { content: '→'; color: #38bdf8; flex-shrink: 0; font-size: 10px; margin-top: 1px; }
+
+    /* EXPANSION SECTION */
+    .expansion-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .exp-card { border-radius: 14px; padding: 20px; border: 1px solid rgba(255,255,255,0.07); background: rgba(255,255,255,0.02); }
+    .exp-phase { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+    .phase-1 { color: #38bdf8; }
+    .phase-2 { color: #22c55e; }
+    .phase-3 { color: #a78bfa; }
+    .exp-title { font-size: 15px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .exp-items { list-style: none; }
+    .exp-items li { font-size: 12px; color: #94a3b8; padding: 3px 0; display: flex; gap: 8px; }
+    .exp-items li span:first-child { flex-shrink: 0; }
+
+    /* ROI BAR */
+    .roi-bar { background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(56,189,248,0.1)); border: 1px solid rgba(34,197,94,0.2); border-radius: 16px; padding: 24px; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 20px; margin-top: 40px; }
+    .roi-stat { text-align: center; }
+    .roi-number { font-size: 32px; font-weight: 900; color: #38bdf8; }
+    .roi-label { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+    /* PRINT */
+    .print-btn { position: fixed; top: 20px; right: 20px; background: #38bdf8; color: #0f172a; border: none; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: 13px; cursor: pointer; z-index: 100; }
+    @media print {
+      .print-btn { display: none; }
+      body { background: #fff; color: #0f172a; }
+      .card, .storage-card, .exp-card { border-color: #e2e8f0 !important; }
+    }
+    @media (max-width: 600px) {
+      .step-row { flex-direction: column; }
+      .storage-row, .output-row, .expansion-row { grid-template-columns: 1fr 1fr; }
+      .title { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">🖨️ Print / PDF</button>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo">● Nexcom AI · nexcomai.ai</div>
+    <h1 class="title">How Our AI Assistant<br/><span>Works, Deploys & Grows</span></h1>
+    <p class="subtitle">A complete overview of how customer signals become captured leads, booked jobs, and long-term business intelligence.</p>
+  </div>
+
+  <!-- STEP 1 — INBOUND CHANNELS -->
+  <div class="flow-section">
+    <div class="section-label">Step 1 — Customer Reaches Out</div>
+    <div class="step-row">
+      <div class="card">
+        <div class="card-icon">📞</div>
+        <div class="card-title">Missed Phone Call</div>
+        <div class="card-desc">Customer calls while you're on a job. Instead of voicemail, they get an instant SMS from your AI assistant.</div>
+        <span class="card-tag tag-blue">SMS triggered</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <div class="card-title">Text / SMS</div>
+        <div class="card-desc">Customer texts your business number at any hour. AI responds instantly — no wait, no missed opportunities.</div>
+        <span class="card-tag tag-blue">Always on</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <div class="card-title">Website Chat</div>
+        <div class="card-desc">Visitor lands on your website and chats directly. AI answers questions, gives pricing, books appointments.</div>
+        <span class="card-tag tag-green">Live on site</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <div class="card-title">Social Media DM</div>
+        <div class="card-desc">Message via Facebook, Instagram, or WhatsApp. AI handles it immediately across all platforms.</div>
+        <span class="card-tag tag-orange">Multi-channel</span>
+      </div>
+      <div class="card">
+        <div class="card-icon">🔗</div>
+        <div class="card-title">Link / QR Code</div>
+        <div class="card-desc">Scan a QR code on a business card, van, or yard sign — instantly opens a chat with your AI assistant.</div>
+        <span class="card-tag tag-purple">Physical → Digital</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- STEP 2 — AI BRAIN -->
+  <div class="flow-section">
+    <div class="section-label">Step 2 — AI Processes Everything</div>
+    <div class="ai-brain">
+      <div class="ai-brain-icon">🤖</div>
+      <div class="ai-brain-title">Nexcom AI Assistant</div>
+      <div class="ai-brain-desc">Your custom AI — trained on your business, your services, your pricing, and your tone. It doesn't sound like a robot. It sounds like you.</div>
+      <div class="ai-features">
+        <span class="ai-feature">✓ Answers FAQs instantly</span>
+        <span class="ai-feature">✓ Gives accurate pricing</span>
+        <span class="ai-feature">✓ Books appointments</span>
+        <span class="ai-feature">✓ Handles emergencies</span>
+        <span class="ai-feature">✓ Qualifies leads</span>
+        <span class="ai-feature">✓ Follows up automatically</span>
+        <span class="ai-feature">✓ Requests reviews</span>
+        <span class="ai-feature">✓ Human handoff when needed</span>
+        <span class="ai-feature">✓ Works 24/7/365</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- STEP 3 — WHAT GETS STORED -->
+  <div class="flow-section">
+    <div class="section-label">Step 3 — Everything Gets Captured & Stored</div>
+    <div class="storage-row">
+      <div class="storage-card">
+        <div class="s-icon">👤</div>
+        <div class="s-title">Lead Profile</div>
+        <div class="s-desc">Name, phone, address, issue type — captured automatically from every conversation</div>
+      </div>
+      <div class="storage-card">
+        <div class="s-icon">📅</div>
+        <div class="s-title">Appointments</div>
+        <div class="s-desc">Date, time, service type, location — booked and confirmed without you lifting a finger</div>
+      </div>
+      <div class="storage-card">
+        <div class="s-icon">💬</div>
+        <div class="s-title">Conversation Log</div>
+        <div class="s-desc">Full transcript of every chat — searchable, reviewable, useful for training and disputes</div>
+      </div>
+      <div class="storage-card">
+        <div class="s-icon">📊</div>
+        <div class="s-title">Analytics</div>
+        <div class="s-desc">Volume, peak hours, top questions, conversion rate — data that helps you grow smarter</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down">↓</div>
+
+  <!-- STEP 4 — OUTPUTS -->
+  <div class="flow-section">
+    <div class="section-label">Step 4 — What You Get Out of It</div>
+    <div class="output-row">
+      <div class="output-card green">
+        <div class="o-icon">💰</div>
+        <div class="o-title">More Revenue</div>
+        <ul class="o-items">
+          <li><span>→</span><span>Every missed call becomes a captured lead</span></li>
+          <li><span>→</span><span>After-hours bookings happen automatically</span></li>
+          <li><span>→</span><span>No leads fall through the cracks</span></li>
+          <li><span>→</span><span>Faster response = higher close rate</span></li>
+          <li><span>→</span><span>Follow-up sequences run on autopilot</span></li>
+        </ul>
+      </div>
+      <div class="output-card blue">
+        <div class="o-icon">⚡</div>
+        <div class="o-title">Time Saved</div>
+        <ul class="o-items">
+          <li><span>→</span><span>No more answering the same questions</span></li>
+          <li><span>→</span><span>Appointment calendar fills itself</span></li>
+          <li><span>→</span><span>You focus on the job, not the phone</span></li>
+          <li><span>→</span><span>Team gets clean lead summaries</span></li>
+          <li><span>→</span><span>Reviews requested automatically</span></li>
+        </ul>
+      </div>
+      <div class="output-card purple">
+        <div class="o-icon">📈</div>
+        <div class="o-title">Business Intelligence</div>
+        <ul class="o-items">
+          <li><span>→</span><span>Know your busiest inquiry hours</span></li>
+          <li><span>→</span><span>See which services are most requested</span></li>
+          <li><span>→</span><span>Track conversion from chat to booked job</span></li>
+          <li><span>→</span><span>Identify gaps in your FAQ coverage</span></li>
+          <li><span>→</span><span>Data improves the AI over time</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <!-- EXPANSION ROADMAP -->
+  <div class="flow-section">
+    <div class="section-label">Expansion Potential — Where This Goes</div>
+    <div class="expansion-row">
+      <div class="exp-card">
+        <div class="exp-phase phase-1">Phase 1 — Now</div>
+        <div class="exp-title">Core AI Assistant</div>
+        <ul class="exp-items">
+          <li><span>✅</span><span>SMS & website chat</span></li>
+          <li><span>✅</span><span>Lead capture + booking</span></li>
+          <li><span>✅</span><span>FAQ automation</span></li>
+          <li><span>✅</span><span>Agent dashboard</span></li>
+          <li><span>✅</span><span>Real estate demo</span></li>
+          <li><span>✅</span><span>Plumbing / trades demo</span></li>
+        </ul>
+      </div>
+      <div class="exp-card">
+        <div class="exp-phase phase-2">Phase 2 — Next 90 Days</div>
+        <div class="exp-title">Multi-Channel + Voice</div>
+        <ul class="exp-items">
+          <li><span>🔜</span><span>Voice AI — answers missed calls</span></li>
+          <li><span>🔜</span><span>Facebook & Instagram DMs</span></li>
+          <li><span>🔜</span><span>WhatsApp Business</span></li>
+          <li><span>🔜</span><span>Email auto-responder</span></li>
+          <li><span>🔜</span><span>Google Calendar sync</span></li>
+          <li><span>🔜</span><span>Automated review requests</span></li>
+        </ul>
+      </div>
+      <div class="exp-card">
+        <div class="exp-phase phase-3">Phase 3 — Scale</div>
+        <div class="exp-title">Full Business Intelligence</div>
+        <ul class="exp-items">
+          <li><span>🚀</span><span>CRM integration (HubSpot, etc.)</span></li>
+          <li><span>🚀</span><span>Local AI models (full privacy)</span></li>
+          <li><span>🚀</span><span>Multi-location support</span></li>
+          <li><span>🚀</span><span>White-label for agencies</span></li>
+          <li><span>🚀</span><span>Predictive lead scoring</span></li>
+          <li><span>🚀</span><span>Self-serve SaaS platform</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROI BAR -->
+  <div class="roi-bar">
+    <div class="roi-stat">
+      <div class="roi-number">24/7</div>
+      <div class="roi-label">Always responding</div>
+    </div>
+    <div class="roi-stat">
+      <div class="roi-number">&lt;10s</div>
+      <div class="roi-label">Average response time</div>
+    </div>
+    <div class="roi-stat">
+      <div class="roi-number">80%</div>
+      <div class="roi-label">Of callers won't leave voicemail</div>
+    </div>
+    <div class="roi-stat">
+      <div class="roi-number">$500+</div>
+      <div class="roi-label">Average job value saved per week</div>
+    </div>
+    <div class="roi-stat">
+      <div class="roi-number">48h</div>
+      <div class="roi-label">Setup time</div>
+    </div>
+    <div class="roi-stat">
+      <div class="roi-number">$300/mo</div>
+      <div class="roi-label">Starting price</div>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top: 40px; color: #475569; font-size: 13px;">
+    <strong style="color:#38bdf8">Nexcom AI</strong> · Tampa Bay, FL · nexcomai.ai · hello@nexcomai.ai
+  </div>
+
+</div>
+</body>
+</html>

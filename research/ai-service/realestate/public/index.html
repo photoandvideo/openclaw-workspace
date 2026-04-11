@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexcom AI — Real Estate Demo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f1f5f9; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; }
+    .badge { background: #eff6ff; border: 1px solid #bfdbfe; color: #2563eb; font-size: 12px; font-weight: 600; padding: 6px 16px; border-radius: 999px; margin-bottom: 12px; }
+    .chat-window { width: 100%; max-width: 480px; background: #fff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.12); border: 1px solid #e2e8f0; display: flex; flex-direction: column; height: 660px; }
+    /* HEADER */
+    .chat-header { background: #fff; padding: 14px 18px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #f1f5f9; }
+    .avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #2563eb); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; position: relative; flex-shrink: 0; }
+    .avatar-dot { position: absolute; bottom: 1px; right: 1px; width: 11px; height: 11px; background: #22c55e; border-radius: 50%; border: 2px solid #fff; }
+    .header-info { flex: 1; }
+    .header-name { font-weight: 700; font-size: 14px; color: #0f172a; }
+    .header-status { font-size: 12px; color: #22c55e; font-weight: 500; }
+    .header-link { font-size: 11px; color: #94a3b8; text-decoration: none; }
+    .header-link:hover { color: #0ea5e9; }
+    /* MESSAGES */
+    #messages { flex: 1; overflow-y: auto; padding: 16px; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+    .msg-row { display: flex; }
+    .msg-row.user { justify-content: flex-end; }
+    .msg-row.bot { justify-content: flex-start; }
+    .bubble { max-width: 78%; padding: 10px 14px; font-size: 13px; line-height: 1.5; }
+    .bubble.bot { background: #fff; border: 1px solid #e2e8f0; border-radius: 18px 18px 18px 4px; color: #334155; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .bubble.user { background: #0ea5e9; color: #fff; border-radius: 18px 18px 4px 18px; }
+    .bubble strong { font-weight: 600; }
+    /* LISTING CARD */
+    .listing-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; cursor: pointer; width: 260px; transition: border-color 0.2s; }
+    .listing-card:hover { border-color: #0ea5e9; }
+    .listing-img { background: linear-gradient(135deg, #bae6fd, #7dd3fc); height: 100px; display: flex; align-items: center; justify-content: center; font-size: 36px; }
+    .listing-body { padding: 12px; }
+    .listing-addr { font-weight: 700; font-size: 13px; color: #0f172a; }
+    .listing-city { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+    .listing-price { font-size: 18px; font-weight: 800; color: #0284c7; }
+    .listing-meta { display: flex; gap: 10px; font-size: 11px; color: #64748b; margin-top: 4px; }
+    .listing-desc { font-size: 11px; color: #94a3b8; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .listing-btn { margin-top: 10px; width: 100%; text-align: center; font-size: 12px; font-weight: 600; color: #0284c7; border: 1px solid #bae6fd; border-radius: 999px; padding: 6px; background: none; cursor: pointer; }
+    .listing-btn:hover { background: #eff6ff; }
+    /* TYPING */
+    .typing-dots { display: flex; gap: 4px; align-items: center; padding: 12px 16px; background: #fff; border: 1px solid #e2e8f0; border-radius: 18px 18px 18px 4px; width: fit-content; }
+    .dot { width: 7px; height: 7px; background: #94a3b8; border-radius: 50%; animation: bounce 1.2s infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-5px)} }
+    /* QUICK REPLIES */
+    #quick-replies { padding: 8px 14px 4px; background: #fff; display: flex; flex-wrap: wrap; gap: 6px; border-top: 1px solid #f1f5f9; }
+    .qbtn { font-size: 12px; padding: 6px 12px; border-radius: 999px; border: 1px solid #cbd5e1; background: #fff; color: #334155; cursor: pointer; font-weight: 500; transition: all 0.15s; }
+    .qbtn:hover { background: #0ea5e9; color: #fff; border-color: #0ea5e9; }
+    /* INPUT */
+    .input-area { padding: 10px 14px 14px; background: #fff; }
+    .input-row { display: flex; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 10px 14px; }
+    .input-row:focus-within { border-color: #0ea5e9; }
+    #user-input { flex: 1; background: none; border: none; outline: none; font-size: 13px; color: #0f172a; }
+    #user-input::placeholder { color: #94a3b8; }
+    #send-btn { background: none; border: none; cursor: pointer; font-size: 13px; font-weight: 600; color: #0ea5e9; }
+    #send-btn:hover { color: #0284c7; }
+    .footer-note { font-size: 11px; color: #94a3b8; margin-top: 10px; text-align: center; max-width: 480px; }
+  </style>
+</head>
+<body>
+  <div class="badge">🏠 Real Estate AI Demo — Powered by Nexcom AI</div>
+
+  <div class="chat-window">
+    <div class="chat-header">
+      <div class="avatar">S<div class="avatar-dot"></div></div>
+      <div class="header-info">
+        <div class="header-name">Sarah Chen Real Estate</div>
+        <div class="header-status">● Available now · Clearwater, FL</div>
+      </div>
+      <a href="/dashboard" class="header-link">Agent Dashboard →</a>
+    </div>
+
+    <div id="messages"></div>
+    <div id="quick-replies"></div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <input id="user-input" type="text" placeholder="Ask about listings, prices, neighborhoods..." onkeydown="if(event.key==='Enter')sendMessage()" />
+        <button id="send-btn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="footer-note">Demo chatbot with live property database. Powered by Nexcom AI — nexcomai.ai</p>
+
+<script>
+let sessionLead = null;
+let state = { step: 'start', budget: null, bedrooms: null, area: null, name: null, phone: null, lastListings: [], selectedProperty: null, selectedAddress: null, showingDate: null };
+
+function msgs() { return document.getElementById('messages'); }
+
+function addMessage(html, isUser) {
+  return new Promise(resolve => {
+    const row = document.createElement('div');
+    row.className = 'msg-row ' + (isUser ? 'user' : 'bot');
+    const b = document.createElement('div');
+    b.className = 'bubble ' + (isUser ? 'user' : 'bot');
+    b.innerHTML = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+    row.appendChild(b);
+    msgs().appendChild(row);
+    msgs().scrollTop = msgs().scrollHeight;
+    resolve();
+  });
+}
+
+function addCard(listing) {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.innerHTML = `
+    <div class="listing-card" onclick="selectListing(${listing.id},'${listing.address.replace(/'/g,"\\'")}')">
+      <div class="listing-img">🏠</div>
+      <div class="listing-body">
+        <div class="listing-addr">${listing.address}</div>
+        <div class="listing-city">${listing.city}, FL ${listing.zip||''}</div>
+        <div class="listing-price">$${listing.price.toLocaleString()}</div>
+        <div class="listing-meta"><span>🛏 ${listing.bedrooms} bd</span><span>🛁 ${listing.bathrooms} ba</span>${listing.sqft?`<span>📐 ${listing.sqft.toLocaleString()} sqft</span>`:''}</div>
+        <div class="listing-desc">${listing.description||''}</div>
+        <button class="listing-btn">Schedule Showing →</button>
+      </div>
+    </div>`;
+  msgs().appendChild(row);
+  msgs().scrollTop = msgs().scrollHeight;
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'msg-row bot'; row.id = 'typing';
+  row.innerHTML = '<div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+  msgs().appendChild(row);
+  msgs().scrollTop = msgs().scrollHeight;
+}
+function removeTyping() { const e = document.getElementById('typing'); if(e) e.remove(); }
+
+function setQR(items) {
+  const c = document.getElementById('quick-replies');
+  c.innerHTML = '';
+  items.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'qbtn'; b.textContent = t;
+    b.onclick = () => handleMsg(t);
+    c.appendChild(b);
+  });
+}
+
+async function selectListing(id, addr) {
+  setQR([]);
+  await addMessage(addr, true);
+  showTyping();
+  state.selectedProperty = id; state.selectedAddress = addr;
+  setTimeout(async () => {
+    removeTyping();
+    await addMessage(`Great choice! 🏡 **${addr}** is available for showings.\n\nLet me get a couple quick details to book it.`);
+    if (!state.name) { state.step = 'name_show'; await addMessage(`What's your name?`); }
+    else { state.step = 'date_show'; setQR(['This weekend','Weekday morning','Weekday evening','ASAP']); await addMessage(`When works best for you, ${state.name}?`); }
+  }, 700);
+}
+
+async function saveLead(data) {
+  try {
+    const r = await fetch('/api/leads', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    const j = await r.json(); return j.lead_id;
+  } catch(e) { return null; }
+}
+
+async function saveShowing(data) {
+  try { await fetch('/api/showings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) }); } catch(e){}
+}
+
+async function searchListings(params) {
+  try {
+    const qs = new URLSearchParams(params).toString();
+    const r = await fetch(`/api/listings?${qs}`);
+    return r.json();
+  } catch(e) { return { listings: [] }; }
+}
+
+function parseBudget(t) {
+  if (t.includes('300k') || t.includes('under 300') || t.includes('300,000')) return {min:0,max:300000};
+  if ((t.includes('300') && t.includes('400'))) return {min:300000,max:400000};
+  if ((t.includes('400') && t.includes('600'))) return {min:400000,max:600000};
+  if (t.includes('600') || t.includes('600k+')) return {min:600000,max:5000000};
+  const m = t.match(/(\d+)/); if(m) { let n=parseInt(m[1]); if(t.includes('k')||n<2000) n*=1000; return {min:0,max:n}; }
+  return {min:0,max:500000};
+}
+
+async function handleMsg(text) {
+  setQR([]);
+  await addMessage(text, true);
+  showTyping();
+  const lower = text.toLowerCase();
+  const delay = 700 + Math.random()*400;
+
+  setTimeout(async () => {
+    removeTyping();
+
+    // Stateful flows
+    if (state.step === 'name') { state.name = text.trim(); state.step = 'phone'; await addMessage(`Nice to meet you, **${state.name}**! 😊\n\nBest phone number to reach you?`); return; }
+    if (state.step === 'phone') { state.phone = text.trim(); state.step = 'budget'; await addMessage(`Got it! What's your budget range?`); setQR(['Under $300k','$300k–$400k','$400k–$600k','$600k+']); return; }
+    if (state.step === 'budget') { state.budget = parseBudget(lower); state.step = 'beds'; await addMessage(`Perfect! How many bedrooms?`); setQR(['1 bedroom','2 bedrooms','3 bedrooms','4+ bedrooms']); return; }
+    if (state.step === 'beds') {
+      state.bedrooms = lower.includes('4') ? 4 : lower.includes('3') ? 3 : lower.includes('2') ? 2 : 1;
+      state.step = 'area';
+      await addMessage(`Got it — ${state.bedrooms}+ bedrooms. Preferred area?`);
+      setQR(['Clearwater Beach','Clearwater','Palm Harbor','Dunedin','Anywhere in Pinellas']); return;
+    }
+    if (state.step === 'area') {
+      state.area = lower.includes('anywhere') ? null : text.trim();
+      state.step = 'browsing';
+      const id = await saveLead({ name: state.name, phone: state.phone, budget_min: state.budget?.min, budget_max: state.budget?.max, bedrooms_needed: state.bedrooms, area: state.area || 'Anywhere in Pinellas' });
+      sessionLead = id;
+      await addMessage(`Let me search listings for you... 🔍`);
+      showTyping();
+      const params = { bedrooms: state.bedrooms, limit: 4 };
+      if (state.budget?.max) params.max_price = state.budget.max;
+      if (state.budget?.min) params.min_price = state.budget.min;
+      if (state.area) params.city = state.area;
+      const data = await searchListings(params);
+      removeTyping();
+      if (data.listings.length === 0) {
+        const broad = await searchListings({ limit: 4 });
+        await addMessage(`No exact matches, but here are some great options nearby:`);
+        broad.listings.forEach(l => { state.lastListings.push(l); addCard(l); });
+      } else {
+        await addMessage(`Found **${data.listings.length}** listings matching your search! 🎉`);
+        data.listings.forEach(l => { state.lastListings.push(l); addCard(l); });
+      }
+      setTimeout(() => setQR(['See more listings','📅 Schedule a showing','💰 Different budget','🏘 Different area']), 400);
+      return;
+    }
+    if (state.step === 'name_show') { state.name = text.trim(); state.step = 'phone_show'; await addMessage(`Nice to meet you, **${state.name}**! What's your phone number?`); return; }
+    if (state.step === 'phone_show') { state.phone = text.trim(); state.step = 'date_show'; await addMessage(`Perfect! When works best for the showing?`); setQR(['This weekend','Weekday morning','Weekday evening','ASAP']); return; }
+    if (state.step === 'date_show') {
+      state.showingDate = text.trim(); state.step = 'browsing';
+      if (!sessionLead) { const id = await saveLead({ name: state.name, phone: state.phone, area: 'Clearwater', notes: `Showing: ${state.selectedAddress}` }); sessionLead = id; }
+      if (state.selectedProperty) await saveShowing({ lead_id: sessionLead, property_id: state.selectedProperty, preferred_date: state.showingDate, preferred_time: 'TBD', notes: 'Chatbot request' });
+      await addMessage(`✅ **Showing requested!**\n\nSarah will call **${state.phone}** within 2 hours to confirm.\n\nAnything else I can help with?`);
+      setQR(['See more listings','Ask about neighborhoods','All set, thanks!']); return;
+    }
+
+    // Intent detection
+    if (/^(hi|hello|hey|start|yes)/.test(lower)) {
+      await addMessage(`Hi there! 👋 I'm Sarah Chen's AI assistant, available 24/7.\n\nI can search listings, answer neighborhood questions, and schedule showings instantly.\n\nWhat's your name?`);
+      state.step = 'name'; return;
+    }
+    if (/listing|find|search|show me|homes|properties|browse|available/.test(lower)) {
+      if (!state.name) { await addMessage(`I'd love to help! What's your name first?`); state.step = 'name'; }
+      else if (!state.budget) { await addMessage(`What's your budget range?`); state.step = 'budget'; setQR(['Under $300k','$300k–$400k','$400k–$600k','$600k+']); }
+      else { const d = await searchListings({ limit:4, max_price: state.budget?.max, bedrooms: state.bedrooms }); await addMessage(`Here are some listings:`); d.listings.forEach(l => addCard(l)); setQR(['More listings','Different budget','Schedule showing']); }
+      return;
+    }
+    if (/more|another|different|next/.test(lower)) {
+      const d = await searchListings({ limit:3 }); await addMessage(`Here are more options:`); d.listings.forEach(l => addCard(l)); setQR(['Schedule showing','Refine search']); return;
+    }
+    if (/schedul|tour|showing|visit|see it/.test(lower)) {
+      if (state.lastListings.length > 0) { await addMessage(`Click **Schedule Showing** on any listing, or tell me which address.`); setQR(state.lastListings.slice(0,3).map(l=>l.address)); }
+      else { await addMessage(`Let me pull up listings first. What's your budget?`); state.step='budget'; setQR(['Under $300k','$300k–$400k','$400k–$600k','$600k+']); }
+      return;
+    }
+    if (/clearwater beach|palm harbor|dunedin|safety harbor|tarpon|largo|neighborhood|area/.test(lower)) {
+      const info = {
+        'clearwater beach': '🏖️ **Clearwater Beach** — World-famous white sand beaches. Condos $400k–$1M+. Great for vacation rentals.',
+        'palm harbor': '🌳 **Palm Harbor** — Top-rated schools, family-friendly suburbs. Homes $350k–$600k.',
+        'dunedin': '🍺 **Dunedin** — Charming walkable downtown, craft breweries. Homes $350k–$550k.',
+        'safety harbor': '⛵ **Safety Harbor** — Waterfront town on Tampa Bay. Beautiful marina. Homes $400k–$700k.',
+        'tarpon': '🦌 **Tarpon Springs** — Historic Greek community, Sponge Docks. Homes $280k–$450k.',
+        'largo': '🏡 **Largo** — Central Pinellas, great value. Homes $280k–$420k.',
+      };
+      const match = Object.keys(info).find(k => lower.includes(k));
+      await addMessage(match ? info[match] : `Pinellas County has amazing neighborhoods! Ask me about Clearwater Beach, Palm Harbor, Dunedin, Safety Harbor, Tarpon Springs, or Largo.`);
+      setQR(['Show listings here','Tell me about another area']); return;
+    }
+    if (/talk|call|sarah|agent|human/.test(lower)) {
+      await addMessage(`Sarah is available Mon–Sat 8am–7pm.\n\n📞 **(727) 555-0188**\n📧 **sarah@chenrealestate.com**\n\nOr I can have her call you!`);
+      setQR(['Have Sarah call me',"I'll call her"]); return;
+    }
+    if (/thank|thanks|great|awesome|perfect|done/.test(lower)) {
+      await addMessage(`Happy to help! 😊 Sarah and her team will take great care of you. Anything else?`);
+      setQR(['Search listings','Ask a question']); return;
+    }
+
+    await addMessage(`I want to make sure I find the right home for you! Could you tell me a bit more about what you're looking for?`);
+    setQR(['🔍 Search listings','🏘 Neighborhoods','📅 Schedule showing','📞 Talk to Sarah']);
+  }, delay);
+}
+
+function sendMessage() {
+  const input = document.getElementById('user-input');
+  const text = input.value.trim(); if (!text) return;
+  input.value = ''; handleMsg(text);
+}
+
+// Boot
+window.onload = () => {
+  setTimeout(() => addMessage(`👋 Hi! I'm Sarah Chen's AI assistant, available 24/7 to help you find your perfect home in Clearwater & Pinellas County.`), 300);
+  setTimeout(() => { addMessage(`I can search listings, answer neighborhood questions, and schedule showings instantly.`); setQR([`Let's get started!`,'Show me listings','Tell me about the area','Talk to Sarah']); }, 1000);
+};
+</script>
+</body>
+</html>
