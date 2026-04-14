@@ -39,7 +39,7 @@ app.get('/', (req, res) => {
 });
 
 // ── API ROUTES ──
-app.post('/sms', smsRoute);
+app.use('/sms', smsRoute);
 
 // ── PLACEHOLDER: Other channels (coming next) ──
 app.post('/webhook/whatsapp', (req, res) => {
