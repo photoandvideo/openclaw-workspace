@@ -41,6 +41,21 @@ app.get('/', (req, res) => {
 // ── API ROUTES ──
 app.use('/sms', smsRoute);
 
+// ── VOICE HANDLER: Incoming calls ──
+app.post('/voice', (req, res) => {
+  const twilio = require('twilio');
+  const voiceResponse = new twilio.twiml.VoiceResponse();
+  
+  // Play greeting and hang up
+  voiceResponse.say(
+    'Thanks for calling NexcomAI. Text us your question and we will respond right away.',
+    { voice: 'woman' }
+  );
+  voiceResponse.hangup();
+  
+  res.type('text/xml').send(voiceResponse.toString());
+});
+
 // ── PLACEHOLDER: Other channels (coming next) ──
 app.post('/webhook/whatsapp', (req, res) => {
   res.json({ status: 'WhatsApp handler - coming soon' });
