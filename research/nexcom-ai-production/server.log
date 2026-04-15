@@ -29,3 +29,6 @@ The user says: "Can you help me". This is ..."
   moreInfo: 'https://www.twilio.com/docs/errors/21608',
   details: undefined
 }
+
+🛑 Shutting down...
+✅ Database connection closed
