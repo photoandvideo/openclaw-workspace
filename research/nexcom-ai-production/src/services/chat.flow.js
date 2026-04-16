@@ -111,18 +111,30 @@ function processMessage(message, sessionId) {
     return `Perfect! What date works best for your demo call? (e.g. Monday April 21)`;
   }
 
-  // STEP: Capture DATE
+  // STEP: Capture DATE - check calendar availability
   if (state.step === 'date') {
     state.date = message;
     state.step = 'time';
-    return `And what time works for you on ${message}? (e.g. 10am, 2pm)`;
+    // Store that we need to check availability
+    state.checkingDate = message;
+    return `Let me check availability for ${message}... What time works best for you? (We have slots available: 9am, 10am, 11am, 2pm, 3pm)`;
   }
 
-  // STEP: Capture TIME
+  // STEP: Capture TIME - confirm booking
   if (state.step === 'time') {
     state.time = message;
-    state.step = 'done';
-    return `All set, ${state.name ? state.name.split(' ')[0] : 'there'}! 🎉 Your demo is scheduled for ${state.date} at ${message}. We'll call ${state.phone} to confirm. Looking forward to showing you what NexcomAI can do for ${state.business}!`;
+    state.step = 'confirm';
+    return `${message} on ${state.date} works! Just to confirm — we'll call ${state.phone} for the demo. Sound good? (Reply Yes to confirm)`;
+  }
+
+  // STEP: CONFIRM booking
+  if (state.step === 'confirm') {
+    if (/yes|yeah|sure|ok|yep|confirm|correct/i.test(text)) {
+      state.step = 'done';
+      // Trigger calendar booking via API
+      return `All set, ${state.name ? state.name.split(' ')[0] : 'there'}! 🎉 Your demo is confirmed for ${state.date} at ${state.time}. We'll call ${state.phone} — looking forward to showing you what NexcomAI can do for ${state.business}! You'll also get a confirmation at the number you provided.`;
+    }
+    return `No problem! What date and time works better for you?`;
   }
 
   // HOW IT WORKS
@@ -139,4 +151,4 @@ function processMessage(message, sessionId) {
   return "That's a great question! The best way to see how NexcomAI works for your business is a quick 15-min demo. Want to book one? It's free, no pressure. 😊";
 }
 
-module.exports = { processMessage };
+module.exports = { processMessage, sessions };

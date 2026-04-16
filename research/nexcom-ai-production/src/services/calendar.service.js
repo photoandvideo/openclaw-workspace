@@ -5,15 +5,17 @@ class CalendarService {
   constructor() {
     this.calendarId = process.env.GOOGLE_CALENDAR_ID || 'jordanhd@gmail.com';
     this.serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_JSON || './config/service-account.json';
+    this.auth = null;
   }
 
   async getAuth() {
+    if (this.auth) return this.auth;
     try {
-      const auth = new google.auth.GoogleAuth({
+      this.auth = new google.auth.GoogleAuth({
         keyFile: path.resolve(this.serviceAccountPath),
         scopes: ['https://www.googleapis.com/auth/calendar']
       });
-      return auth;
+      return this.auth;
     } catch (error) {
       console.error('❌ Calendar auth error:', error.message);
       return null;
@@ -21,38 +23,108 @@ class CalendarService {
   }
 
   /**
-   * Create a demo booking event on Google Calendar
+   * Get available slots for a given date
+   * Returns array of available 30-min slots between 9am-5pm
    */
-  async createDemoBooking(data) {
+  async getAvailableSlots(dateStr) {
+    try {
+      const auth = await this.getAuth();
+      if (!auth) return null;
+
+      const calendar = google.calendar({ version: 'v3', auth });
+
+      // Parse the date
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) {
+        // Try natural language parsing
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        date.setTime(tomorrow.getTime());
+      }
+
+      // Set to start of business day (9am EST)
+      const startOfDay = new Date(date);
+      startOfDay.setHours(9, 0, 0, 0);
+
+      // Set to end of business day (5pm EST)
+      const endOfDay = new Date(date);
+      endOfDay.setHours(17, 0, 0, 0);
+
+      // Get existing events for that day
+      const response = await calendar.events.list({
+        calendarId: this.calendarId,
+        timeMin: startOfDay.toISOString(),
+        timeMax: endOfDay.toISOString(),
+        singleEvents: true,
+        orderBy: 'startTime'
+      });
+
+      const events = response.data.items || [];
+      const busySlots = events.map(e => ({
+        start: new Date(e.start.dateTime || e.start.date),
+        end: new Date(e.end.dateTime || e.end.date)
+      }));
+
+      // Generate 30-min slots from 9am to 5pm
+      const availableSlots = [];
+      let current = new Date(startOfDay);
+
+      while (current < endOfDay) {
+        const slotEnd = new Date(current.getTime() + 30 * 60000);
+        const isBusy = busySlots.some(b => 
+          (current >= b.start && current < b.end) ||
+          (slotEnd > b.start && slotEnd <= b.end)
+        );
+
+        if (!isBusy) {
+          const hours = current.getHours();
+          const mins = current.getMinutes();
+          const ampm = hours >= 12 ? 'pm' : 'am';
+          const displayHour = hours > 12 ? hours - 12 : hours;
+          const displayMins = mins === 0 ? '' : `:${mins}`;
+          availableSlots.push({
+            time: `${displayHour}${displayMins}${ampm}`,
+            dateTime: new Date(current)
+          });
+        }
+
+        current = slotEnd;
+      }
+
+      return availableSlots.slice(0, 5); // Return first 5 available slots
+    } catch (error) {
+      console.error('❌ Calendar availability error:', error.message);
+      return null;
+    }
+  }
+
+  /**
+   * Book a demo appointment
+   */
+  async bookAppointment(data) {
     try {
       const auth = await this.getAuth();
       if (!auth) return false;
 
       const calendar = google.calendar({ version: 'v3', auth });
 
-      // Schedule for next business day at 10am EST
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(10, 0, 0, 0);
-
-      const endTime = new Date(tomorrow);
-      endTime.setMinutes(endTime.getMinutes() + 30);
+      const startTime = new Date(data.dateTime);
+      const endTime = new Date(startTime.getTime() + 30 * 60000);
 
       const event = {
-        summary: `NexcomAI Demo - ${data.name} (${data.business || data.businessType})`,
+        summary: `NexcomAI Demo - ${data.name} (${data.business})`,
         description: `
-Demo Request from Website
+Demo Call
 
 Name: ${data.name}
-Business: ${data.business || '—'}
-Type: ${data.businessType || '—'}
+Business: ${data.business}
 Phone: ${data.phone}
-Packages Interested: ${(data.packages || []).join(', ') || 'TBD'}
+Interested in: ${data.packages || 'TBD'}
 
-Action: Call ${data.phone} to confirm demo time and details.
+ACTION: Call ${data.phone} at the scheduled time.
         `.trim(),
         start: {
-          dateTime: tomorrow.toISOString(),
+          dateTime: startTime.toISOString(),
           timeZone: 'America/New_York'
         },
         end: {
@@ -73,12 +145,19 @@ Action: Call ${data.phone} to confirm demo time and details.
         resource: event
       });
 
-      console.log(`✅ Calendar event created: ${response.data.htmlLink}`);
+      console.log(`✅ Demo booked: ${response.data.htmlLink}`);
       return response.data;
     } catch (error) {
-      console.error('❌ Calendar error:', error.message);
+      console.error('❌ Booking error:', error.message);
       return false;
     }
+  }
+
+  /**
+   * Create a simple booking (without availability check)
+   */
+  async createDemoBooking(data) {
+    return this.bookAppointment(data);
   }
 }
 

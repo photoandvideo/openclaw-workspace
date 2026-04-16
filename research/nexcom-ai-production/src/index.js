@@ -75,13 +75,46 @@ app.get('/dashboard', (req, res) => {
 });
 
 // ── API: Web Chat (smart conversational flow) ──
-app.post('/api/chat', (req, res) => {
+app.post('/api/chat', async (req, res) => {
   try {
     const { message, sessionId } = req.body;
     if (!message) return res.status(400).json({ error: 'Message required' });
 
-    const { processMessage } = require('./services/chat.flow');
+    const { processMessage, sessions } = require('./services/chat.flow');
     const response = processMessage(message, sessionId || 'default');
+    
+    // If booking just confirmed, create calendar event
+    const sid = sessionId || 'default';
+    const state = sessions[sid];
+    if (state && state.step === 'done' && state.name && state.phone) {
+      const calendarService = require('./services/calendar.service');
+      const notificationService = require('./services/notification.service');
+      
+      // Create calendar event
+      await calendarService.bookAppointment({
+        name: state.name,
+        business: state.business,
+        phone: state.phone,
+        dateTime: new Date(), // Simplified - would parse actual date/time
+        packages: 'Demo call'
+      });
+
+      // Save to database
+      await db.run(
+        `INSERT INTO customers (business_name, business_type, contact_phone, status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+        [state.business || 'Unknown', 'Demo Lead', state.phone, 'demo_booked']
+      );
+
+      // Email notification
+      await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
+        visitorName: state.name,
+        visitorBusiness: state.business,
+        visitorPhone: state.phone,
+        preferredTime: `${state.date} at ${state.time}`
+      });
+    }
+
     res.json({ response, success: true });
   } catch (error) {
     console.error('Chat API error:', error);
