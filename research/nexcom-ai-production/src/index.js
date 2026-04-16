@@ -115,6 +115,22 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
+// ── API: Test Email ──
+app.get('/api/test-email', async (req, res) => {
+  try {
+    const notificationService = require('./services/notification.service');
+    const result = await notificationService.notifyBusinessOwner('nexcomaiai@gmail.com', {
+      visitorName: 'Test User',
+      visitorBusiness: 'Test Company',
+      visitorPhone: '727-555-0100',
+      preferredTime: 'April 21 at 10am'
+    });
+    res.json({ success: result, gmail_user: process.env.GMAIL_USER, gmail_pass_set: !!process.env.GMAIL_PASS });
+  } catch (error) {
+    res.json({ error: error.message });
+  }
+});
+
 // ── API: Demo Booking ──
 app.post('/api/book', async (req, res) => {
   try {
