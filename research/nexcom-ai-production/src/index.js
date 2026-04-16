@@ -125,7 +125,7 @@ app.get('/api/test-email', async (req, res) => {
       visitorPhone: '727-555-0100',
       preferredTime: 'April 21 at 10am'
     });
-    res.json({ success: result, gmail_user: process.env.GMAIL_USER, gmail_pass_set: !!process.env.GMAIL_PASS });
+    res.json({ success: result, resend_key_set: !!process.env.RESEND_API_KEY });
   } catch (error) {
     res.json({ error: error.message });
   }
