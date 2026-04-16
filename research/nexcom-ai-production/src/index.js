@@ -120,6 +120,7 @@ app.post('/api/book', async (req, res) => {
     if (!name || !phone) return res.status(400).json({ error: 'Name and phone required' });
 
     const notificationService = require('./services/notification.service');
+    const calendarService = require('./services/calendar.service');
     
     // Save lead to database
     await db.run(
@@ -136,6 +137,9 @@ app.post('/api/book', async (req, res) => {
       preferredTime: 'ASAP',
       visitorEmail: req.body.email || '—'
     });
+
+    // Create Google Calendar event
+    await calendarService.createDemoBooking({ name, business, phone, businessType, packages });
 
     console.log(`📅 New booking: ${name} - ${business} - ${phone}`);
     res.json({ success: true, message: 'Demo booked! We\'ll reach out within 24h.' });
