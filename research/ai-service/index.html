@@ -41,7 +41,7 @@
       We set up an AI assistant that answers your calls, texts, and messages 24/7 — booking appointments, answering FAQs, and following up on leads automatically.
     </p>
     <div class="flex flex-col sm:flex-row gap-4 justify-center">
-      <a href="demo.html" class="accent-bg text-slate-900 font-bold px-8 py-4 rounded-full text-lg hover:brightness-110 transition glow">
+      <a href="#demo" class="accent-bg text-slate-900 font-bold px-8 py-4 rounded-full text-lg hover:brightness-110 transition glow">
         See Live Demo →
       </a>
       <a href="#contact" class="border border-slate-600 text-white font-semibold px-8 py-4 rounded-full text-lg hover:border-sky-400 transition">
@@ -86,58 +86,120 @@
     </div>
   </section>
 
-  <!-- DEMO CTA -->
-  <section class="py-16 px-6 max-w-3xl mx-auto text-center">
+  <!-- LIVE DEMO -->
+  <section class="py-16 px-6 max-w-3xl mx-auto text-center" id="demo">
     <div class="card rounded-3xl p-12 glow">
       <div class="text-5xl mb-4">💬</div>
       <h2 class="text-3xl font-bold mb-4">Try it right now</h2>
-      <p class="text-slate-400 mb-8">Chat with a demo AI assistant set up for a local plumbing company. This is exactly what your customers would experience.</p>
-      <a href="demo.html" class="accent-bg text-slate-900 font-bold px-8 py-4 rounded-full text-lg hover:brightness-110 transition inline-block">
-        Open Live Demo →
-      </a>
+      <p class="text-slate-400 mb-8">Chat with our AI assistant live on this page. This is exactly what your customers would experience.</p>
+      <div class="bg-slate-800 rounded-xl p-6 min-h-80 flex flex-col" id="chat-demo">
+        <div class="flex-1 overflow-y-auto mb-4 space-y-3">
+          <div class="bg-sky-500 text-white px-4 py-2 rounded-lg w-fit ml-auto text-sm">Hi, can you help?</div>
+          <div class="bg-slate-700 text-slate-100 px-4 py-2 rounded-lg w-fit text-sm">Of course! I'm here to help. What can I answer about our services?</div>
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="demo-input" placeholder="Type your question..." class="flex-1 bg-slate-700 text-white px-4 py-2 rounded-lg text-sm focus:outline-none focus:border-sky-400 border border-slate-600" />
+          <button onclick="sendDemoMessage()" class="accent-bg text-slate-900 font-bold px-4 py-2 rounded-lg text-sm">Send</button>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- PRICING -->
-  <section class="py-24 px-6 max-w-5xl mx-auto" id="pricing">
+  <section class="py-24 px-6 max-w-6xl mx-auto" id="pricing">
     <h2 class="text-3xl font-bold text-center mb-4">Simple pricing</h2>
-    <p class="text-slate-400 text-center mb-16">No tech knowledge needed. We handle setup and support.</p>
-    <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+    <p class="text-slate-400 text-center mb-16">Choose the package that fits your business. All include setup and support.</p>
+    
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- SMS Only -->
       <div class="card rounded-2xl p-8">
         <div class="text-sky-400 text-sm font-semibold mb-2">STARTER</div>
         <div class="text-4xl font-extrabold mb-1">$500</div>
         <div class="text-slate-400 text-sm mb-6">one-time setup + $300/mo</div>
-        <ul class="space-y-3 text-sm text-slate-300">
-          <li>✅ Custom AI assistant setup</li>
-          <li>✅ SMS & messaging integration</li>
-          <li>✅ FAQ + appointment booking</li>
+        <ul class="space-y-3 text-sm text-slate-300 mb-8">
+          <li>✅ SMS chatbot (24/7)</li>
+          <li>✅ Lead capture</li>
+          <li>✅ Appointment booking</li>
+          <li>✅ FAQ automation</li>
           <li>✅ Monthly check-ins</li>
-          <li>✅ Cancel anytime</li>
         </ul>
-        <a href="#contact" class="mt-8 block text-center border border-sky-400 text-sky-400 font-semibold py-3 rounded-full hover:bg-sky-400 hover:text-slate-900 transition">
+        <a href="#contact" class="block text-center border border-sky-400 text-sky-400 font-semibold py-3 rounded-full hover:bg-sky-400 hover:text-slate-900 transition">
           Get Started
         </a>
       </div>
-      <div class="card rounded-2xl p-8 border-sky-500/40 relative">
+
+      <!-- Web Chat Only -->
+      <div class="card rounded-2xl p-8">
+        <div class="text-sky-400 text-sm font-semibold mb-2">WEB CHAT</div>
+        <div class="text-4xl font-extrabold mb-1">$500</div>
+        <div class="text-slate-400 text-sm mb-6">one-time setup + $300/mo</div>
+        <ul class="space-y-3 text-sm text-slate-300 mb-8">
+          <li>✅ Website chat widget</li>
+          <li>✅ Auto-pop greeting</li>
+          <li>✅ Lead capture form</li>
+          <li>✅ Email notifications</li>
+          <li>✅ Monthly check-ins</li>
+        </ul>
+        <a href="#contact" class="block text-center border border-sky-400 text-sky-400 font-semibold py-3 rounded-full hover:bg-sky-400 hover:text-slate-900 transition">
+          Get Started
+        </a>
+      </div>
+
+      <!-- SMS + Web (Most Popular) -->
+      <div class="card rounded-2xl p-8 border-sky-500/40 relative lg:col-span-1 md:col-span-2">
         <div class="absolute -top-3 left-1/2 -translate-x-1/2 accent-bg text-slate-900 text-xs font-bold px-4 py-1 rounded-full">MOST POPULAR</div>
-        <div class="text-sky-400 text-sm font-semibold mb-2">GROWTH</div>
-        <div class="text-4xl font-extrabold mb-1">$1,000</div>
+        <div class="text-sky-400 text-sm font-semibold mb-2">SMS + WEB</div>
+        <div class="text-4xl font-extrabold mb-1">$800</div>
         <div class="text-slate-400 text-sm mb-6">one-time setup + $500/mo</div>
-        <ul class="space-y-3 text-sm text-slate-300">
-          <li>✅ Everything in Starter</li>
-          <li>✅ Multi-channel (SMS, email, IG, FB)</li>
-          <li>✅ Lead follow-up sequences</li>
-          <li>✅ Weekly performance reports</li>
+        <ul class="space-y-3 text-sm text-slate-300 mb-8">
+          <li>✅ SMS + web chat</li>
+          <li>✅ Multi-channel leads</li>
+          <li>✅ Appointment booking</li>
+          <li>✅ Unified dashboard</li>
+          <li>✅ Weekly check-ins</li>
+        </ul>
+        <a href="#contact" class="block text-center accent-bg text-slate-900 font-bold py-3 rounded-full hover:brightness-110 transition">
+          Get Started
+        </a>
+      </div>
+
+      <!-- WhatsApp -->
+      <div class="card rounded-2xl p-8">
+        <div class="text-sky-400 text-sm font-semibold mb-2">+ WHATSAPP</div>
+        <div class="text-4xl font-extrabold mb-1">$1,000</div>
+        <div class="text-slate-400 text-sm mb-6">one-time setup + $750/mo</div>
+        <ul class="space-y-3 text-sm text-slate-300 mb-8">
+          <li>✅ SMS + Web + WhatsApp</li>
+          <li>✅ Multi-language support</li>
+          <li>✅ Lead scoring</li>
+          <li>✅ Performance reports</li>
           <li>✅ Priority support</li>
         </ul>
-        <a href="#contact" class="mt-8 block text-center accent-bg text-slate-900 font-bold py-3 rounded-full hover:brightness-110 transition">
+        <a href="#contact" class="block text-center border border-sky-400 text-sky-400 font-semibold py-3 rounded-full hover:bg-sky-400 hover:text-slate-900 transition">
+          Get Started
+        </a>
+      </div>
+
+      <!-- Full Suite -->
+      <div class="card rounded-2xl p-8">
+        <div class="text-sky-400 text-sm font-semibold mb-2">FULL SUITE</div>
+        <div class="text-4xl font-extrabold mb-1">$1,500</div>
+        <div class="text-slate-400 text-sm mb-6">one-time setup + $1,000/mo</div>
+        <ul class="space-y-3 text-sm text-slate-300 mb-8">
+          <li>✅ All platforms (SMS, Web, WhatsApp, FB, Telegram)</li>
+          <li>✅ Custom integrations</li>
+          <li>✅ Lead routing</li>
+          <li>✅ Advanced analytics</li>
+          <li>✅ Dedicated support</li>
+        </ul>
+        <a href="#contact" class="block text-center border border-sky-400 text-sky-400 font-semibold py-3 rounded-full hover:bg-sky-400 hover:text-slate-900 transition">
           Get Started
         </a>
       </div>
     </div>
   </section>
 
-  <!-- CONTACT -->
+  <!-- CONTACT / BOOKING -->
   <section class="py-24 px-6 max-w-2xl mx-auto" id="contact">
     <h2 class="text-3xl font-bold text-center mb-4">Book your free demo</h2>
     <p class="text-slate-400 text-center mb-10">We'll show you exactly how it works for your type of business. No pressure, no commitment.</p>
@@ -167,6 +229,23 @@
           <option>Other</option>
         </select>
       </div>
+      <div>
+        <label class="text-sm text-slate-400 mb-1 block">Which packages interest you?</label>
+        <div class="space-y-2">
+          <label class="flex items-center">
+            <input type="checkbox" name="package" value="sms" class="mr-2" /> SMS Only
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" name="package" value="web" class="mr-2" /> Web Chat
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" name="package" value="whatsapp" class="mr-2" /> WhatsApp
+          </label>
+          <label class="flex items-center">
+            <input type="checkbox" name="package" value="full" class="mr-2" /> Full Suite
+          </label>
+        </div>
+      </div>
       <button type="submit" class="w-full accent-bg text-slate-900 font-bold py-4 rounded-xl text-lg hover:brightness-110 transition">
         Book My Free Demo →
       </button>
@@ -186,9 +265,37 @@
       btn.disabled = true;
       btn.classList.remove('hover:brightness-110');
     }
+
+    function sendDemoMessage() {
+      const input = document.getElementById('demo-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      const chatDemo = document.getElementById('chat-demo');
+      const messagesDiv = chatDemo.querySelector('div:first-child');
+      
+      // Add user message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'bg-sky-500 text-white px-4 py-2 rounded-lg w-fit ml-auto text-sm';
+      userMsg.textContent = message;
+      messagesDiv.appendChild(userMsg);
+
+      input.value = '';
+
+      // Simulate AI response
+      setTimeout(() => {
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'bg-slate-700 text-slate-100 px-4 py-2 rounded-lg w-fit text-sm';
+        aiMsg.textContent = 'Great question! I can help with that. Would you like to book a demo to see how this works for your business?';
+        messagesDiv.appendChild(aiMsg);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }, 500);
+    }
+
+    // Allow Enter to send
+    document.getElementById('demo-input')?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') sendDemoMessage();
+    });
   </script>
-
-<script src="chat-widget.js"></script>
-
 </body>
 </html>
