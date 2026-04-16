@@ -54,7 +54,7 @@ function processMessage(message, sessionId) {
   }
 
   // BOOKING / DEMO REQUEST
-  if (matchesAny(text, BOOKING_KEYWORDS)) {
+  if (matchesAny(text, BOOKING_KEYWORDS) && !matchesAny(text, FACEBOOK_KEYWORDS) && !matchesAny(text, WHATSAPP_KEYWORDS) && !matchesAny(text, SMS_KEYWORDS) && !matchesAny(text, WEB_KEYWORDS)) {
     state.step = 'booking';
     return "Great! Let's get you set up. What's your name and business name so we can schedule your free demo?";
   }
@@ -90,8 +90,10 @@ function processMessage(message, sessionId) {
     return "We offer AI chatbots for local businesses: SMS ($300/mo), Web Chat ($300/mo), SMS + Web ($500/mo), WhatsApp ($750/mo), or Full Suite ($1,000/mo). Which channel do your customers use most?";
   }
 
-  // CAPTURE NAME (during booking flow)
-  if (state.step === 'booking' && !state.name) {
+  // CAPTURE NAME (during booking flow OR if looks like a name)
+  const looksLikeName = /^[A-Z][a-z]+ [A-Z][a-z]+$/.test(message.trim()) || (state.step === 'booking' && !state.name);
+  if (looksLikeName && !state.name) {
+    state.step = 'booking';
     state.name = message;
     return `Nice to meet you, ${message.split(' ')[0]}! What type of business do you run? (e.g. plumbing, real estate, cleaning, HVAC)`;
   }
