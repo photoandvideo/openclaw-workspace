@@ -53,6 +53,15 @@ function processMessage(message, sessionId) {
     return "Hi! 👋 I'm the NexcomAI assistant. We set up AI chatbots for local businesses — SMS, website chat, WhatsApp, and more. What type of business do you have?";
   }
 
+  // STEP: CONFIRM booking — check this BEFORE booking keywords
+  if (state.step === 'confirm') {
+    if (/yes|yeah|sure|ok|yep|confirm|correct/i.test(text)) {
+      state.step = 'done';
+      return `All set, ${state.name ? state.name.split(' ')[0] : 'there'}! 🎉 Your demo is confirmed for ${state.date} at ${state.time}. We'll call ${state.phone} — looking forward to showing you what NexcomAI can do for ${state.business}!`;
+    }
+    return `No problem! What date and time works better for you?`;
+  }
+
   // BOOKING / DEMO REQUEST
   if (matchesAny(text, BOOKING_KEYWORDS) && !matchesAny(text, FACEBOOK_KEYWORDS) && !matchesAny(text, WHATSAPP_KEYWORDS) && !matchesAny(text, SMS_KEYWORDS) && !matchesAny(text, WEB_KEYWORDS)) {
     state.step = 'name';
@@ -133,16 +142,6 @@ function processMessage(message, sessionId) {
     state.time = message;
     state.step = 'confirm';
     return `${message} on ${state.date} works! Just to confirm — we'll call ${state.phone} for the demo. Sound good? (Reply Yes to confirm)`;
-  }
-
-  // STEP: CONFIRM booking
-  if (state.step === 'confirm') {
-    if (/yes|yeah|sure|ok|yep|confirm|correct/i.test(text)) {
-      state.step = 'done';
-      // Trigger calendar booking via API
-      return `All set, ${state.name ? state.name.split(' ')[0] : 'there'}! 🎉 Your demo is confirmed for ${state.date} at ${state.time}. We'll call ${state.phone} — looking forward to showing you what NexcomAI can do for ${state.business}! You'll also get a confirmation at the number you provided.`;
-    }
-    return `No problem! What date and time works better for you?`;
   }
 
   // HOW IT WORKS
