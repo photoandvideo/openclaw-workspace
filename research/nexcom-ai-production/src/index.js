@@ -119,13 +119,15 @@ app.post('/api/chat', async (req, res) => {
 app.get('/api/test-email', async (req, res) => {
   try {
     const notificationService = require('./services/notification.service');
-    const result = await notificationService.notifyBusinessOwner('nexcomaiai@gmail.com', {
-      visitorName: 'Test User',
-      visitorBusiness: 'Test Company',
-      visitorPhone: '727-555-0100',
-      preferredTime: 'April 21 at 10am'
+    const { Resend } = require('resend');
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const { data, error } = await resend.emails.send({
+      from: 'onboarding@resend.dev',
+      to: 'nexcomaiai@gmail.com',
+      subject: 'NexcomAI Test Email',
+      html: '<h1>Test email working!</h1>'
     });
-    res.json({ success: result, resend_key_set: !!process.env.RESEND_API_KEY });
+    res.json({ success: !error, resend_key_set: !!process.env.RESEND_API_KEY, data, error });
   } catch (error) {
     res.json({ error: error.message });
   }
