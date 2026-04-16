@@ -5,7 +5,7 @@ class AIService {
     // Minimax OpenAI-compatible API (v1 endpoint)
     this.apiKey = process.env.MINIMAX_API_KEY;
     this.baseUrl = process.env.MINIMAX_BASE_URL || 'https://api.minimax.io/v1';
-    this.model = 'MiniMax-M2.7';
+    this.model = 'MiniMax-Text-01';
   }
 
   /**
