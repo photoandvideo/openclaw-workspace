@@ -74,50 +74,42 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard.html'));
 });
 
-// ── API: Web Chat (smart conversational flow) ──
+// ── API: Web Chat (DB-backed session state) ──
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, sessionId } = req.body;
     if (!message) return res.status(400).json({ error: 'Message required' });
-
-    const { processMessage, sessions } = require('./services/chat.flow');
-    const response = processMessage(message, sessionId || 'default');
-    
-    // If booking just confirmed, create calendar event
     const sid = sessionId || 'default';
-    const state = sessions[sid];
-    if (state && state.step === 'done' && state.name && state.phone) {
-      const calendarService = require('./services/calendar.service');
+
+    // Load session state from DB
+    let stateRow = await db.get('SELECT * FROM sessions WHERE session_key = ?', [sid]);
+    let state = stateRow ? JSON.parse(stateRow.data) : { step: 'start' };
+
+    // Process message with loaded state
+    const { processMessageWithState } = require('./services/chat.flow');
+    const { response, newState } = processMessageWithState(message, state);
+
+    // Save updated state to DB
+    if (stateRow) {
+      await db.run('UPDATE sessions SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE session_key = ?', [JSON.stringify(newState), sid]);
+    } else {
+      await db.run('INSERT INTO sessions (session_key, data, created_at, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)', [sid, JSON.stringify(newState)]);
+    }
+
+    // If booking just confirmed, notify
+    if (newState.step === 'done' && newState.phone) {
       const notificationService = require('./services/notification.service');
-      
-      // Create calendar event
-      await calendarService.bookAppointment({
-        name: state.name,
-        business: state.business,
-        phone: state.phone,
-        dateTime: new Date(), // Simplified - would parse actual date/time
-        packages: 'Demo call'
-      });
-
-      // Save to database
-      await db.run(
-        `INSERT INTO customers (business_name, business_type, contact_phone, status, created_at, updated_at)
-         VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
-        [state.business || 'Unknown', 'Demo Lead', state.phone, 'demo_booked']
-      );
-
-      // Email notification
       await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
-        visitorName: state.name,
-        visitorBusiness: state.business,
-        visitorPhone: state.phone,
-        preferredTime: `${state.date} at ${state.time}`
+        visitorName: newState.name,
+        visitorBusiness: newState.business,
+        visitorPhone: newState.phone,
+        preferredTime: `${newState.date} at ${newState.time}`
       });
     }
 
     res.json({ response, success: true });
   } catch (error) {
-    console.error('Chat API error:', error);
+    console.error('Chat API error:', error.message);
     res.json({ response: 'Thanks for reaching out! We help local businesses never miss a lead. Want to book a free demo?', success: false });
   }
 });
