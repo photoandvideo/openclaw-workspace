@@ -113,6 +113,38 @@ RULES:
   }
 });
 
+// ── API: Demo Booking ──
+app.post('/api/book', async (req, res) => {
+  try {
+    const { name, business, phone, businessType, packages } = req.body;
+    if (!name || !phone) return res.status(400).json({ error: 'Name and phone required' });
+
+    const notificationService = require('./services/notification.service');
+    
+    // Save lead to database
+    await db.run(
+      `INSERT INTO customers (business_name, business_type, contact_phone, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      [business || 'Unknown', businessType || 'Other', phone, 'lead']
+    );
+
+    // Notify Hugo via email
+    await notificationService.notifyBusinessOwner('hugo@nexcomai.ai', {
+      visitorName: name,
+      visitorBusiness: business,
+      visitorPhone: phone,
+      preferredTime: 'ASAP',
+      visitorEmail: req.body.email || '—'
+    });
+
+    console.log(`📅 New booking: ${name} - ${business} - ${phone}`);
+    res.json({ success: true, message: 'Demo booked! We\'ll reach out within 24h.' });
+  } catch (error) {
+    console.error('Booking error:', error);
+    res.status(500).json({ error: 'Booking failed', message: error.message });
+  }
+});
+
 // ── API: Get conversations ──
 app.get('/api/conversations', async (req, res) => {
   try {

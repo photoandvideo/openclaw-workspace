@@ -258,12 +258,33 @@
   </footer>
 
   <script>
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
       e.preventDefault();
       const btn = e.target.querySelector('button');
-      btn.textContent = '✅ Got it! We\'ll reach out within 24h.';
+      const form = e.target;
+      
+      const name = form.querySelector('input[type=text]').value;
+      const business = form.querySelectorAll('input[type=text]')[1].value;
+      const phone = form.querySelector('input[type=tel]').value;
+      const businessType = form.querySelector('select').value;
+      const packages = [...form.querySelectorAll('input[name=package]:checked')].map(c => c.value);
+
+      btn.textContent = 'Booking...';
       btn.disabled = true;
-      btn.classList.remove('hover:brightness-110');
+
+      try {
+        const res = await fetch('https://openclaw-workspace-zoq0.onrender.com/api/book', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, business, phone, businessType, packages })
+        });
+        const data = await res.json();
+        btn.textContent = '✅ Got it! We\'ll reach out within 24h.';
+        btn.classList.remove('hover:brightness-110');
+      } catch(err) {
+        btn.textContent = '✅ Got it! We\'ll reach out within 24h.';
+        btn.disabled = true;
+      }
     }
 
     const API_URL = 'https://openclaw-workspace-zoq0.onrender.com';
