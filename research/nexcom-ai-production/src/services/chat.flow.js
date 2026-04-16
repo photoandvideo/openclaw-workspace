@@ -27,7 +27,7 @@ const FACEBOOK_KEYWORDS = ['facebook', 'messenger'];
 const TELEGRAM_KEYWORDS = ['telegram'];
 const FULL_KEYWORDS = ['all platforms', 'full suite', 'everything', 'all channels'];
 
-const BOOKING_KEYWORDS = ['book a demo', 'schedule a demo', 'book a call', 'schedule a call', 'want a demo', 'book me', 'lets book', "let's book", 'i want to book', 'interested in a demo'];
+const BOOKING_KEYWORDS = ['book a demo', 'schedule a demo', 'book a call', 'schedule a call', 'want a demo', 'book me', 'lets book', "let's book", 'i want to book', 'interested in a demo', 'get a demo', 'like to get a demo', 'would like a demo', 'like to book', 'sign me up', 'ready to start', 'how do i start', 'get started'];
 
 const PRICE_KEYWORDS = ['price', 'cost', 'how much', 'pricing', 'charge', 'fee', 'monthly', 'setup'];
 
