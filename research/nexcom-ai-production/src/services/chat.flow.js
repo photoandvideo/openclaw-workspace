@@ -22,12 +22,12 @@ const SERVICE_KEYWORDS = [
 
 const SMS_KEYWORDS = ['sms', 'text', 'texting', 'message', 'messaging'];
 const WEB_KEYWORDS = ['web', 'website', 'chat', 'widget', 'site'];
-const WHATSAPP_KEYWORDS = ['whatsapp', 'whats app', 'wa'];
-const FACEBOOK_KEYWORDS = ['facebook', 'messenger', 'fb'];
+const WHATSAPP_KEYWORDS = ['whatsapp', 'whats app'];
+const FACEBOOK_KEYWORDS = ['facebook', 'messenger'];
 const TELEGRAM_KEYWORDS = ['telegram'];
-const FULL_KEYWORDS = ['all', 'everything', 'full', 'complete', 'all platforms'];
+const FULL_KEYWORDS = ['all platforms', 'full suite', 'everything', 'all channels'];
 
-const BOOKING_KEYWORDS = ['demo', 'book', 'schedule', 'appointment', 'call', 'talk', 'meeting', 'yes', 'sure', 'interested'];
+const BOOKING_KEYWORDS = ['book a demo', 'schedule a demo', 'book a call', 'schedule a call', 'want a demo', 'book me', 'lets book', "let's book", 'i want to book', 'interested in a demo'];
 
 const PRICE_KEYWORDS = ['price', 'cost', 'how much', 'pricing', 'charge', 'fee', 'monthly', 'setup'];
 
@@ -55,8 +55,8 @@ function processMessage(message, sessionId) {
 
   // BOOKING / DEMO REQUEST
   if (matchesAny(text, BOOKING_KEYWORDS) && !matchesAny(text, FACEBOOK_KEYWORDS) && !matchesAny(text, WHATSAPP_KEYWORDS) && !matchesAny(text, SMS_KEYWORDS) && !matchesAny(text, WEB_KEYWORDS)) {
-    state.step = 'booking';
-    return "Great! Let's get you set up. What's your name and business name so we can schedule your free demo?";
+    state.step = 'name';
+    return "Great! Let's book your free demo. What's your name?";
   }
 
   // PRICE INQUIRY
@@ -90,28 +90,39 @@ function processMessage(message, sessionId) {
     return "We offer AI chatbots for local businesses: SMS ($300/mo), Web Chat ($300/mo), SMS + Web ($500/mo), WhatsApp ($750/mo), or Full Suite ($1,000/mo). Which channel do your customers use most?";
   }
 
-  // CAPTURE NAME (during booking flow OR if looks like a name)
-  const looksLikeName = /^[A-Z][a-z]+ [A-Z][a-z]+$/.test(message.trim()) || (state.step === 'booking' && !state.name);
-  if (looksLikeName && !state.name) {
-    state.step = 'booking';
+  // STEP: Capture NAME
+  if (state.step === 'name') {
     state.name = message;
-    return `Nice to meet you, ${message.split(' ')[0]}! What type of business do you run? (e.g. plumbing, real estate, cleaning, HVAC)`;
+    state.step = 'company';
+    return `Nice to meet you, ${message.split(' ')[0]}! What's your company name?`;
   }
 
-  // CAPTURE BUSINESS TYPE
-  if (state.step === 'booking' && state.name && !state.business) {
+  // STEP: Capture COMPANY
+  if (state.step === 'company') {
     state.business = message;
-    return `Perfect! What's the best phone number to reach you to schedule the demo?`;
+    state.step = 'phone';
+    return `Great! What's the best phone number to reach you?`;
   }
 
-  // CAPTURE PHONE
-  if (state.step === 'booking' && state.name && state.business && !state.phone) {
-    const phoneMatch = message.match(/[\d\s\-\(\)\+]{7,}/);
-    if (phoneMatch) {
-      state.phone = phoneMatch[0].trim();
-      return `Got it! We'll call ${state.phone} within 24 hours to schedule your free demo. We'll show you exactly how the AI works for a ${state.business} business. Anything else I can help with?`;
-    }
-    return "Could you share your phone number so we can reach you? (e.g. 727-555-0100)";
+  // STEP: Capture PHONE
+  if (state.step === 'phone') {
+    state.phone = message;
+    state.step = 'date';
+    return `Perfect! What date works best for your demo call? (e.g. Monday April 21)`;
+  }
+
+  // STEP: Capture DATE
+  if (state.step === 'date') {
+    state.date = message;
+    state.step = 'time';
+    return `And what time works for you on ${message}? (e.g. 10am, 2pm)`;
+  }
+
+  // STEP: Capture TIME
+  if (state.step === 'time') {
+    state.time = message;
+    state.step = 'done';
+    return `All set, ${state.name ? state.name.split(' ')[0] : 'there'}! 🎉 Your demo is scheduled for ${state.date} at ${message}. We'll call ${state.phone} to confirm. Looking forward to showing you what NexcomAI can do for ${state.business}!`;
   }
 
   // HOW IT WORKS
