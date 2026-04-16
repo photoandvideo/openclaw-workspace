@@ -11,8 +11,19 @@ class NotificationService {
    * Setup email transporter (SendGrid or SMTP)
    */
   setupEmail() {
-    if (process.env.SENDGRID_API_KEY) {
-      // SendGrid
+    if (process.env.GMAIL_USER && process.env.GMAIL_PASS) {
+      // Gmail SMTP
+      this.transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_PASS
+        }
+      });
+      this.fromEmail = process.env.GMAIL_USER;
+      console.log('✅ Gmail email configured');
+    } else if (process.env.SENDGRID_API_KEY) {
+      // SendGrid fallback
       this.transporter = nodemailer.createTransport({
         host: 'smtp.sendgrid.net',
         port: 587,
@@ -21,17 +32,7 @@ class NotificationService {
           pass: process.env.SENDGRID_API_KEY
         }
       });
-    } else if (process.env.SMTP_HOST) {
-      // SMTP (Gmail, etc.)
-      this.transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT || 587,
-        secure: false,
-        auth: {
-          user: process.env.SMTP_USER,
-          pass: process.env.SMTP_PASS
-        }
-      });
+      this.fromEmail = 'noreply@nexcomai.ai';
     } else {
       console.warn('⚠️ No email service configured');
     }
@@ -104,7 +105,7 @@ class NotificationService {
 
     try {
       const mailOptions = {
-        from: process.env.SMTP_USER || 'noreply@nexcomai.ai',
+        from: this.fromEmail || 'nexcomai@gmail.com',
         to: email,
         subject: `Appointment Confirmed: ${data.businessName}`,
         html: `
@@ -148,7 +149,7 @@ class NotificationService {
 
     try {
       const mailOptions = {
-        from: process.env.SMTP_USER || 'noreply@nexcomai.ai',
+        from: this.fromEmail || 'nexcomai@gmail.com',
         to: email,
         subject: `🔥 NEW LEAD: ${data.visitorName}`,
         html: `
