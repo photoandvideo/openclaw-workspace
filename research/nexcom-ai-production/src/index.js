@@ -99,7 +99,7 @@ app.post('/api/chat', async (req, res) => {
     if (newState.step === 'done' && newState.phone) {
       try {
         const notificationService = require('./services/notification.service');
-        await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
+        await notificationService.notifyBusinessOwner('nexcomaiai@gmail.com', {
           visitorName: newState.name,
           visitorBusiness: newState.business,
           visitorPhone: newState.phone,
@@ -132,7 +132,7 @@ app.post('/api/book', async (req, res) => {
     );
 
     // Notify Hugo via email
-    await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
+    await notificationService.notifyBusinessOwner('nexcomaiai@gmail.com', {
       visitorName: name,
       visitorBusiness: business,
       visitorPhone: phone,

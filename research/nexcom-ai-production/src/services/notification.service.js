@@ -105,7 +105,7 @@ class NotificationService {
 
     try {
       const mailOptions = {
-        from: this.fromEmail || 'nexcomai@gmail.com',
+        from: this.fromEmail || 'nexcomaiai@gmail.com',
         to: email,
         subject: `Appointment Confirmed: ${data.businessName}`,
         html: `
@@ -149,7 +149,7 @@ class NotificationService {
 
     try {
       const mailOptions = {
-        from: this.fromEmail || 'nexcomai@gmail.com',
+        from: this.fromEmail || 'nexcomaiai@gmail.com',
         to: email,
         subject: `🔥 NEW LEAD: ${data.visitorName}`,
         html: `
