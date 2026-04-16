@@ -81,8 +81,8 @@ app.post('/api/chat', async (req, res) => {
     if (!message) return res.status(400).json({ error: 'Message required' });
     const sid = sessionId || 'default';
 
-    // Load session state from DB
-    let stateRow = await db.get('SELECT * FROM sessions WHERE session_key = ?', [sid]);
+    // Load session state from DB (chat_sessions table)
+    let stateRow = await db.get('SELECT * FROM chat_sessions WHERE session_key = ?', [sid]);
     let state = stateRow ? JSON.parse(stateRow.data) : { step: 'start' };
 
     // Process message with loaded state
@@ -91,9 +91,9 @@ app.post('/api/chat', async (req, res) => {
 
     // Save updated state to DB
     if (stateRow) {
-      await db.run('UPDATE sessions SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE session_key = ?', [JSON.stringify(newState), sid]);
+      await db.run('UPDATE chat_sessions SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE session_key = ?', [JSON.stringify(newState), sid]);
     } else {
-      await db.run('INSERT INTO sessions (session_key, data, created_at, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)', [sid, JSON.stringify(newState)]);
+      await db.run('INSERT INTO chat_sessions (session_key, data) VALUES (?, ?)', [sid, JSON.stringify(newState)]);
     }
 
     // If booking just confirmed, notify

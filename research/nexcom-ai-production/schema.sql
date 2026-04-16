@@ -144,3 +144,12 @@ CREATE TABLE IF NOT EXISTS audit_log (
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY(customer_id) REFERENCES customers(id) ON DELETE SET NULL
 );
+
+-- Web Chat Sessions (simple key-value for website chat)
+CREATE TABLE IF NOT EXISTS chat_sessions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  session_key TEXT UNIQUE NOT NULL,
+  data TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
