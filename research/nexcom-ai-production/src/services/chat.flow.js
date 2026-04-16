@@ -90,8 +90,16 @@ function processMessage(message, sessionId) {
     return "We offer AI chatbots for local businesses: SMS ($300/mo), Web Chat ($300/mo), SMS + Web ($500/mo), WhatsApp ($750/mo), or Full Suite ($1,000/mo). Which channel do your customers use most?";
   }
 
-  // STEP: Capture NAME
+  // STEP: Capture NAME (accept any response when in name step)
   if (state.step === 'name') {
+    state.name = message;
+    state.step = 'company';
+    return `Nice to meet you, ${message.split(' ')[0]}! What's your company name?`;
+  }
+
+  // Detect name if looks like a name (single or double word, capitalized)
+  const looksLikeName = /^[A-Za-z]+(\s[A-Za-z]+)?$/.test(message.trim()) && message.length < 30;
+  if (looksLikeName && !state.name && state.step !== 'start') {
     state.name = message;
     state.step = 'company';
     return `Nice to meet you, ${message.split(' ')[0]}! What's your company name?`;
