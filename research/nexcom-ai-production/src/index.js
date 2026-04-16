@@ -74,43 +74,44 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard.html'));
 });
 
-// ── API: Web Chat (DB-backed session state) ──
+// In-memory chat sessions (works perfectly, no DB needed)
+const chatSessions = {};
+
+// ── API: Web Chat ──
 app.post('/api/chat', async (req, res) => {
   try {
     const { message, sessionId } = req.body;
     if (!message) return res.status(400).json({ error: 'Message required' });
     const sid = sessionId || 'default';
 
-    // Load session state from DB (chat_sessions table)
-    let stateRow = await db.get('SELECT * FROM chat_sessions WHERE session_key = ?', [sid]);
-    let state = stateRow ? JSON.parse(stateRow.data) : { step: 'start' };
+    // Get or create session state
+    if (!chatSessions[sid]) chatSessions[sid] = { step: 'start' };
+    const state = chatSessions[sid];
 
-    // Process message with loaded state
+    // Process message
     const { processMessageWithState } = require('./services/chat.flow');
     const { response, newState } = processMessageWithState(message, state);
+    
+    // Save updated state
+    chatSessions[sid] = newState;
 
-    // Save updated state to DB
-    if (stateRow) {
-      await db.run('UPDATE chat_sessions SET data = ?, updated_at = CURRENT_TIMESTAMP WHERE session_key = ?', [JSON.stringify(newState), sid]);
-    } else {
-      await db.run('INSERT INTO chat_sessions (session_key, data) VALUES (?, ?)', [sid, JSON.stringify(newState)]);
-    }
-
-    // If booking just confirmed, notify
+    // If booking confirmed, notify
     if (newState.step === 'done' && newState.phone) {
-      const notificationService = require('./services/notification.service');
-      await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
-        visitorName: newState.name,
-        visitorBusiness: newState.business,
-        visitorPhone: newState.phone,
-        preferredTime: `${newState.date} at ${newState.time}`
-      });
+      try {
+        const notificationService = require('./services/notification.service');
+        await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
+          visitorName: newState.name,
+          visitorBusiness: newState.business,
+          visitorPhone: newState.phone,
+          preferredTime: `${newState.date} at ${newState.time}`
+        });
+      } catch(e) { console.error('Notification error:', e.message); }
     }
 
     res.json({ response, success: true });
   } catch (error) {
     console.error('Chat API error:', error.message);
-    res.json({ response: 'Thanks for reaching out! We help local businesses never miss a lead. Want to book a free demo?', success: false });
+    res.status(500).json({ response: 'Sorry, something went wrong. Please try again.', success: false });
   }
 });
 
