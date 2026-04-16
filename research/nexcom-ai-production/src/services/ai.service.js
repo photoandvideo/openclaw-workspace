@@ -49,15 +49,19 @@ Always be friendly and responsive.`;
 
       console.log(`📤 Calling Minimax (OpenAI API) for: "${message.substring(0, 50)}..."`);
 
+      // Add system message as first message (OpenAI format)
+      const fullMessages = [
+        { role: 'system', content: systemPrompt },
+        ...messages
+      ];
+
       const response = await axios.post(
         `${this.baseUrl}/chat/completions`,
         {
           model: this.model,
-          max_tokens: 200,
-          system: systemPrompt,
-          messages: messages,
-          temperature: 0.7,
-          top_p: 0.95
+          max_tokens: 500,
+          messages: fullMessages,
+          temperature: 0.7
         },
         {
           headers: {
