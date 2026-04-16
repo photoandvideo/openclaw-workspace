@@ -74,39 +74,15 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard.html'));
 });
 
-// ── API: Web Chat ──
-app.post('/api/chat', async (req, res) => {
+// ── API: Web Chat (smart conversational flow) ──
+app.post('/api/chat', (req, res) => {
   try {
     const { message, sessionId } = req.body;
     if (!message) return res.status(400).json({ error: 'Message required' });
 
-    const aiService = require('./services/ai.service');
-    const businessContext = {
-      name: 'NexcomAI',
-      type: 'AI chatbot service company',
-      description: `You are NexcomAI's sales assistant. NexcomAI sets up AI chatbots for local service businesses in Tampa Bay.
-
-OUR SERVICES:
-- SMS Chatbot: $500 setup + $300/mo
-- Web Chat: $500 setup + $300/mo
-- SMS + Web (most popular): $800 setup + $500/mo
-- WhatsApp: $1,000 setup + $750/mo
-- Full Suite (all platforms): $1,500 setup + $1,000/mo
-
-WHO WE HELP: Plumbers, HVAC, electricians, real estate, cleaning, lawn care, pest control.
-
-RULES:
-- Keep every response to MAX 2 sentences
-- Ask only ONE question at a time
-- Guide them step by step: first ask their business type, then their biggest pain point, then offer a demo
-- Always be warm and conversational
-- Never use bullet points or markdown
-- Push toward booking a free demo
-- Only discuss NexcomAI services`
-    };
-
-    const aiResult = await aiService.generateResponse(message, [], businessContext);
-    res.json({ response: aiResult.response, success: true });
+    const { processMessage } = require('./services/chat.flow');
+    const response = processMessage(message, sessionId || 'default');
+    res.json({ response, success: true });
   } catch (error) {
     console.error('Chat API error:', error);
     res.json({ response: 'Thanks for reaching out! We help local businesses never miss a lead. Want to book a free demo?', success: false });
