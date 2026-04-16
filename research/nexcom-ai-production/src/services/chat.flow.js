@@ -56,7 +56,7 @@ function processMessage(message, sessionId) {
   // BOOKING / DEMO REQUEST
   if (matchesAny(text, BOOKING_KEYWORDS) && !matchesAny(text, FACEBOOK_KEYWORDS) && !matchesAny(text, WHATSAPP_KEYWORDS) && !matchesAny(text, SMS_KEYWORDS) && !matchesAny(text, WEB_KEYWORDS)) {
     state.step = 'name';
-    return "Great! Let's book your free demo. What's your name?";
+    return "Great! Let's book your free demo. What's your first and last name?";
   }
 
   // PRICE INQUIRY
