@@ -130,7 +130,7 @@ app.post('/api/book', async (req, res) => {
     );
 
     // Notify Hugo via email
-    await notificationService.notifyBusinessOwner('jordanhd@gmail.com', {
+    await notificationService.notifyBusinessOwner('nexcomai@gmail.com', {
       visitorName: name,
       visitorBusiness: business,
       visitorPhone: phone,
