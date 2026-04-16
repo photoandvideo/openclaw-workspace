@@ -74,6 +74,27 @@ app.get('/dashboard', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/dashboard.html'));
 });
 
+// ── API: Web Chat ──
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, sessionId } = req.body;
+    if (!message) return res.status(400).json({ error: 'Message required' });
+
+    const aiService = require('./services/ai.service');
+    const businessContext = {
+      name: 'NexcomAI',
+      type: 'AI assistant for local service businesses',
+      description: 'We set up AI chatbots for local businesses that answer texts, DMs, and missed calls 24/7.'
+    };
+
+    const aiResult = await aiService.generateResponse(message, [], businessContext);
+    res.json({ response: aiResult.response, success: true });
+  } catch (error) {
+    console.error('Chat API error:', error);
+    res.json({ response: 'Thanks for reaching out! We help local businesses never miss a lead. Want to book a free demo?', success: false });
+  }
+});
+
 // ── API: Get conversations ──
 app.get('/api/conversations', async (req, res) => {
   try {

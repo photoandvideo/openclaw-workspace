@@ -266,9 +266,7 @@
       btn.classList.remove('hover:brightness-110');
     }
 
-    const API_URL = 'https://openclaw-workspace-zoq0.onrender.com';
-
-    async function sendDemoMessage() {
+    function sendDemoMessage() {
       const input = document.getElementById('demo-input');
       const message = input.value.trim();
       if (!message) return;
@@ -281,37 +279,17 @@
       userMsg.className = 'bg-sky-500 text-white px-4 py-2 rounded-lg w-fit ml-auto text-sm';
       userMsg.textContent = message;
       messagesDiv.appendChild(userMsg);
+
       input.value = '';
 
-      // Add typing indicator
-      const typing = document.createElement('div');
-      typing.className = 'bg-slate-700 text-slate-400 px-4 py-2 rounded-lg w-fit text-sm italic';
-      typing.id = 'typing-indicator';
-      typing.textContent = 'Typing...';
-      messagesDiv.appendChild(typing);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
-
-      try {
-        const response = await fetch(`${API_URL}/api/chat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message, sessionId: 'web-demo-' + Date.now() })
-        });
-        const data = await response.json();
-        document.getElementById('typing-indicator')?.remove();
-
+      // Simulate AI response
+      setTimeout(() => {
         const aiMsg = document.createElement('div');
         aiMsg.className = 'bg-slate-700 text-slate-100 px-4 py-2 rounded-lg w-fit text-sm';
-        aiMsg.textContent = data.response || 'Thanks for reaching out! Want to book a free demo?';
+        aiMsg.textContent = 'Great question! I can help with that. Would you like to book a demo to see how this works for your business?';
         messagesDiv.appendChild(aiMsg);
-      } catch (error) {
-        document.getElementById('typing-indicator')?.remove();
-        const aiMsg = document.createElement('div');
-        aiMsg.className = 'bg-slate-700 text-slate-100 px-4 py-2 rounded-lg w-fit text-sm';
-        aiMsg.textContent = 'Thanks for reaching out! We help local businesses never miss a lead. Want to book a free demo?';
-        messagesDiv.appendChild(aiMsg);
-      }
-      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      }, 500);
     }
 
     // Allow Enter to send
