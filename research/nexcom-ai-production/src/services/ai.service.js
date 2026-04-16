@@ -67,8 +67,12 @@ Always be friendly and responsive.`;
         }
       );
 
-      const aiResponse = response.data.choices?.[0]?.message?.content || 'I couldn\'t generate a response.';
+      let aiResponse = response.data.choices?.[0]?.message?.content || 'I couldn\'t generate a response.';
       const tokensUsed = response.data.usage?.total_tokens || 0;
+
+      // Strip <think>...</think> blocks from Minimax M2.7 thinking model
+      aiResponse = aiResponse.replace(/<think>[\s\S]*?<\/think>/gi, '').trim();
+      if (!aiResponse) aiResponse = 'Thanks for reaching out! How can I help you today?';
 
       console.log(`✅ Minimax responded: "${aiResponse.substring(0, 50)}..."`);
 
