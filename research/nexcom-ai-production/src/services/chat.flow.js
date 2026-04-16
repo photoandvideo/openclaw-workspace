@@ -71,16 +71,27 @@ function processMessageWithState(message, inputState) {
   }
 
   if (state.step === 'date') {
-    state.date = message;
+    // Normalize date input
+    let dateStr = message;
+    if (/^\d{1,2}$/.test(message.trim())) {
+      dateStr = `April ${message.trim()}`;
+    }
+    state.date = dateStr;
     state.step = 'time';
-    response = `Let me check availability for ${message}... What time works best for you? (We have slots: 9am, 10am, 11am, 2pm, 3pm)`;
+    response = `Got it — ${dateStr}. What time works best? (Available slots: 9am, 10am, 11am, 2pm, 3pm)`;
     return { response, newState: state };
   }
 
   if (state.step === 'time') {
-    state.time = message;
+    // Normalize time input
+    let timeStr = message.trim();
+    if (/^\d{1,2}$/.test(timeStr)) {
+      const h = parseInt(timeStr);
+      timeStr = h >= 1 && h <= 6 ? `${h}pm` : `${h}am`;
+    }
+    state.time = timeStr;
     state.step = 'confirm';
-    response = `${message} on ${state.date} works! Just to confirm — we'll call ${state.phone} for the demo. Sound good? (Reply Yes to confirm)`;
+    response = `${timeStr} on ${state.date} works! Just to confirm — we'll call ${state.phone} for your 30-min demo. Ready to confirm?`;
     return { response, newState: state };
   }
 
@@ -124,6 +135,12 @@ function processMessageWithState(message, inputState) {
 
   if (text.includes('how') && (text.includes('work') || text.includes('does'))) {
     response = "We configure the AI with your business info in 24-48 hours. Then it answers customer texts and messages automatically — 24/7, no human needed. Want to see a demo?";
+    return { response, newState: state };
+  }
+
+  // THANK YOU after booking
+  if (/thank|thanks|great|awesome|perfect|sounds good/i.test(text) && state.step === 'done') {
+    response = "You're welcome! We'll see you then. Talk soon! 👋";
     return { response, newState: state };
   }
 
