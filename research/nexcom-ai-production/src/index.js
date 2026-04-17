@@ -122,7 +122,7 @@ app.get('/api/test-email', async (req, res) => {
     const { Resend } = require('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
     const { data, error } = await resend.emails.send({
-      from: 'onboarding@resend.dev',
+      from: 'NexcomAI <noreply@nexcomai.ai>',
       to: 'nexcomaiai@gmail.com',
       subject: 'NexcomAI Test Email',
       html: '<h1>Test email working!</h1>'

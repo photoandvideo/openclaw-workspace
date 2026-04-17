@@ -21,7 +21,7 @@ class NotificationService {
 
     try {
       const { error } = await this.resend.emails.send({
-        from: 'NexcomAI <onboarding@resend.dev>',
+        from: 'NexcomAI <noreply@nexcomai.ai>',
         to: email,
         subject: `🔥 NEW LEAD: ${data.visitorName}`,
         html: `
@@ -66,7 +66,7 @@ class NotificationService {
 
     try {
       const { error } = await this.resend.emails.send({
-        from: 'NexcomAI <onboarding@resend.dev>',
+        from: 'NexcomAI <noreply@nexcomai.ai>',
         to: email,
         subject: `✅ Demo Confirmed: ${data.appointmentTime}`,
         html: `
