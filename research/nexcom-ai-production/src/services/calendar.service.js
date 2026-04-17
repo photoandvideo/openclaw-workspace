@@ -11,8 +11,19 @@ class CalendarService {
   async getAuth() {
     if (this.auth) return this.auth;
     try {
+      // Try JSON string from env var first (for Render)
+      const jsonEnv = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
+      let credentials;
+      if (jsonEnv && jsonEnv.startsWith('{')) {
+        credentials = JSON.parse(jsonEnv);
+      } else {
+        // Fall back to file path
+        const fs = require('fs');
+        const filePath = path.resolve(jsonEnv || './config/service-account.json');
+        credentials = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      }
       this.auth = new google.auth.GoogleAuth({
-        keyFile: path.resolve(this.serviceAccountPath),
+        credentials,
         scopes: ['https://www.googleapis.com/auth/calendar']
       });
       return this.auth;

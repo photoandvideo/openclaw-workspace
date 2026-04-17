@@ -133,6 +133,23 @@ app.get('/api/test-email', async (req, res) => {
   }
 });
 
+// ── API: Test Calendar ──
+app.get('/api/test-calendar', async (req, res) => {
+  try {
+    const calendarService = require('./services/calendar.service');
+    const result = await calendarService.createEvent({
+      summary: 'NexcomAI Demo - Test User',
+      description: 'Test booking from nexcomai.ai',
+      startTime: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      endTime: new Date(Date.now() + 24 * 60 * 60 * 1000 + 30 * 60 * 1000).toISOString(),
+      attendeeEmail: 'nexcomaiai@gmail.com'
+    });
+    res.json({ success: true, event: result });
+  } catch (error) {
+    res.json({ success: false, error: error.message });
+  }
+});
+
 // ── API: Demo Booking ──
 app.post('/api/book', async (req, res) => {
   try {

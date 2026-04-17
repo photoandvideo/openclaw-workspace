@@ -19,3 +19,4 @@ token.pickle
 .DS_Store
 Thumbs.db
 research/nexcom-ai-production/node_modules/
+research/nexcom-ai-production/config/
