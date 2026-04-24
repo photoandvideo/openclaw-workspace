@@ -10,6 +10,8 @@ skills/playwright-scraper-skill/node_modules/
 
 # Secrets (never commit)
 *.env
+*.env.txt
+*.env.*.txt
 secrets.env
 credentials.json
 token.pickle
